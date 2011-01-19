@@ -58,23 +58,23 @@ public:
 
     void _k_guiClientAdded(KXMLGUIClient *client)
     {
-	if (client != q)
-	    return;
+        if (client != q)
+            return;
 
-	q->initializeGuiState();
-	_k_updateState();
+        q->initializeGuiState();
+        _k_updateState();
     }
 
     void _k_updateState()
     {
-	const int projectCount =
-	    ICore::self()->projectController()->projectCount();
+        const int projectCount =
+            ICore::self()->projectController()->projectCount();
 
-	IPlugin::ReverseStateChange reverse = IPlugin::StateNoReverse;
-	if (! projectCount)
-	    reverse = IPlugin::StateReverse;
+        IPlugin::ReverseStateChange reverse = IPlugin::StateNoReverse;
+        if (! projectCount)
+            reverse = IPlugin::StateReverse;
 
-	q->stateChanged(QLatin1String("has_project"), reverse);
+        q->stateChanged(QLatin1String("has_project"), reverse);
     }
 
     IPlugin *q;
@@ -85,7 +85,7 @@ public:
 
 IPlugin::IPlugin( const KComponentData &instance, QObject *parent )
         : QObject( parent ),
-	  KXMLGUIClient(), d( new IPluginPrivate(this) )
+          KXMLGUIClient(), d( new IPluginPrivate(this) )
 {
     // The following cast is safe, there's no component in KDevPlatform that
     // creates plugins except the plugincontroller. The controller passes
@@ -102,16 +102,16 @@ IPlugin::IPlugin( const KComponentData &instance, QObject *parent )
             continue;
 
         connect(guiWindow->guiFactory(), SIGNAL(clientAdded(KXMLGUIClient *)),
-		this, SLOT(_k_guiClientAdded(KXMLGUIClient *)));
+                this, SLOT(_k_guiClientAdded(KXMLGUIClient *)));
     }
 
     connect(ICore::self()->projectController(),
-	    SIGNAL(projectOpened(KDevelop::IProject *)),
-	    this, SLOT(_k_updateState()));
+            SIGNAL(projectOpened(KDevelop::IProject *)),
+            this, SLOT(_k_updateState()));
 
     connect(ICore::self()->projectController(),
-	    SIGNAL(projectClosed(KDevelop::IProject *)),
-	    this, SLOT(_k_updateState()));
+            SIGNAL(projectClosed(KDevelop::IProject *)),
+            this, SLOT(_k_updateState()));
 }
 
 IPlugin::~IPlugin()
