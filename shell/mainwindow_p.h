@@ -125,6 +125,7 @@ public Q_SLOTS:
 
     /// reload all open documents
     void reloadAll();
+    void viewInitialized(Sublime::View*);
 
 private:
     KActionCollection *actionCollection();

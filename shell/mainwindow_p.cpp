@@ -193,20 +193,30 @@ void MainWindowPrivate::mergeView(Sublime::View* view)
     if (!view)
         return;
 
-    QWidget* viewWidget = view->widget();
-    Q_ASSERT(viewWidget);
+    if( view->isInitialized() ) {
+        QWidget* viewWidget = view->widget();
+        Q_ASSERT(viewWidget);
 
-    kDebug() << "changing active view to" << view << "doc" << view->document() << "mw" << m_mainWindow;
+        kDebug() << "changing active view to" << view << "doc" << view->document() << "mw" << m_mainWindow;
 
-    // If the new view is KXMLGUIClient, add it.
-    if (KXMLGUIClient* c = dynamic_cast<KXMLGUIClient*>(viewWidget))
-    {
-        kDebug() << "setting new XMLGUI client" << viewWidget;
-        lastXMLGUIClientView = viewWidget;
-        m_mainWindow->guiFactory()->addClient(c);
-        connect(viewWidget, SIGNAL(destroyed(QObject*)),
-                this, SLOT(xmlguiclientDestroyed(QObject*)));
+        // If the new view is KXMLGUIClient, add it.
+        if (KXMLGUIClient* c = dynamic_cast<KXMLGUIClient*>(viewWidget))
+        {
+            kDebug() << "setting new XMLGUI client" << viewWidget;
+            lastXMLGUIClientView = viewWidget;
+            m_mainWindow->guiFactory()->addClient(c);
+            connect(viewWidget, SIGNAL(destroyed(QObject*)),
+                    this, SLOT(xmlguiclientDestroyed(QObject*)));
+        }
+    } else {
+        // Delay initialization
+        connect( view, SIGNAL(initialized(Sublime::View*)), this, SLOT(viewInitialized(Sublime::View*)) );
     }
+}
+
+void MainWindowPrivate::viewInitialized(Sublime::View* view)
+{
+    mergeView(view);
 }
 
 void MainWindowPrivate::xmlguiclientDestroyed(QObject* obj)

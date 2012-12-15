@@ -75,11 +75,14 @@ public:
 
     void notifyPositionChanged(int newPositionInArea);
 
+    bool isInitialized();
+
 Q_SIGNALS:
     void raise(Sublime::View*);
     /// Notify that the status for this document has changed
     void statusChanged(Sublime::View*);
     void positionChanged(Sublime::View*, int);
+    void initialized(Sublime::View*);
 
 public Q_SLOTS:
     void requestRaise();
@@ -92,6 +95,7 @@ protected:
      * @returns a new widget which is used for this view
      */
     virtual QWidget *createWidget(QWidget *parent);
+    void setInitialized( bool );
 
 private:
     Q_PRIVATE_SLOT(d, void unsetWidget())

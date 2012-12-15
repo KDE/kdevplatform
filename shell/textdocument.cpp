@@ -649,12 +649,20 @@ KDevelop::TextView::~TextView()
 QWidget * KDevelop::TextView::createWidget(QWidget * parent)
 {
     TextEditorWidget* teWidget = new TextEditorWidget(this, parent);
+    connect(teWidget, SIGNAL(initialized()), this, SLOT(editorInitialized()));
     connect(teWidget, SIGNAL(statusChanged()), this, SLOT(sendStatusChanged()));
 
     d->editor = teWidget;
     connect(d->editor, SIGNAL(destroyed(QObject*)), this, SLOT(editorDestroyed(QObject*)));
     
     return teWidget;
+}
+
+void KDevelop::TextView::editorInitialized()
+{
+    kDebug() << "textviews widget is initialized, emitting initialized signal";
+    setInitialized(true);
+    emit initialized(this);
 }
 
 void KDevelop::TextView::editorDestroyed(QObject* obj) {
@@ -758,7 +766,7 @@ KDevelop::TextEditorWidget::TextEditorWidget(const TextView* view, QWidget* pare
     d->view = 0;
 
     setLayout(d->widgetLayout);
-    initialize();
+    QMetaObject::invokeMethod(this, "initialize", Qt::QueuedConnection);
 }
 
 KDevelop::TextEditorWidget::~TextEditorWidget()
@@ -775,6 +783,7 @@ void KDevelop::TextEditorWidget::initialize()
     KTextEditor::Range ir = d->textView->initialRange();
     selectAndReveal(view, ir);
     setEditorView(view);
+    emit initialized();
 }
 
 void KDevelop::TextEditorWidget::viewStatusChanged(KTextEditor::View* view, const KTextEditor::Cursor& )

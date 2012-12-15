@@ -38,13 +38,14 @@ public:
     QWidget *widget;
     void unsetWidget();
     View::WidgetOwnership ws;
+    bool initialized;
 
 private:
     View *view;
 };
 
 ViewPrivate::ViewPrivate(View * v)
-    :doc(0), widget(0), view(v)
+    :doc(0), widget(0), initialized(false), view(v)
 {
 }
 
@@ -75,6 +76,16 @@ Document *View::document() const
     return d->doc;
 }
 
+bool View::isInitialized()
+{
+    return d->initialized;
+}
+
+void View::setInitialized( bool initialized )
+{
+    d->initialized = initialized;
+}
+
 QWidget *View::widget(QWidget *parent)
 {
     if (!d->widget)
@@ -87,6 +98,7 @@ QWidget *View::widget(QWidget *parent)
 
 QWidget *View::createWidget(QWidget *parent)
 {
+    setInitialized(true);
     return d->doc->createViewWidget(parent);
 }
 

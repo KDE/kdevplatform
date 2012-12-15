@@ -111,6 +111,7 @@ public:
 private Q_SLOTS:
     void sendStatusChanged();
     void editorDestroyed(QObject* obj);
+    void editorInitialized();
 
 private:
     class TextViewPrivate* const d;
@@ -131,6 +132,7 @@ public:
 
 Q_SIGNALS:
     void statusChanged();
+    void initialized();
 
 public Q_SLOTS:
     void initialize();
