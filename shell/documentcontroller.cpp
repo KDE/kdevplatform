@@ -375,6 +375,7 @@ struct DocumentControllerPrivate {
             if (!partView)
             {
                 //no view currently shown for this url
+                kDebug() << "creating view for doc:" << sdoc->title();
                 partView = sdoc->createView();
                 addView = true;
             }

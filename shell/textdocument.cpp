@@ -24,6 +24,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QLabel>
+#include <QMouseEvent>
 
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -120,6 +121,7 @@ struct TextDocumentPrivate {
     
     void populateContextMenu( KTextEditor::View* v, QMenu* menu )
     {
+        kDebug() << "populating view context menu";
         if (m_addedContextMenu) {
             foreach ( QAction* action, m_addedContextMenu->actions() ) {
                 menu->removeAction(action);
@@ -396,6 +398,7 @@ QWidget *TextDocument::createViewWidget(QWidget *parent)
     view = d->document->createView(parent);
 
     if (view) {
+        kDebug() << "got view, connecting contextMenuAboutToShow signal to slot";
         connect(view, SIGNAL(contextMenuAboutToShow(KTextEditor::View*,QMenu*)), this, SLOT(populateContextMenu(KTextEditor::View*,QMenu*)));
 
         //in KDE >= 4.4 we can use KXMLGuiClient::replaceXMLFile to provide
@@ -403,6 +406,7 @@ QWidget *TextDocument::createViewWidget(QWidget *parent)
         const QString uiFile = KGlobal::mainComponent().componentName() + "/katepartui.rc";
         QStringList katePartUIs = KGlobal::mainComponent().dirs()->findAllResources("data", uiFile);
         if (!katePartUIs.isEmpty()) {
+            kDebug() << "modifying xmlgui file for kate";
             const QString katePartUI = katePartUIs.last();
             const QString katePartLocalUI = KStandardDirs::locateLocal("data", uiFile);
             if (!QFile::exists(katePartLocalUI)) {
@@ -412,6 +416,8 @@ QWidget *TextDocument::createViewWidget(QWidget *parent)
             }
             view->replaceXMLFile(katePartUI, katePartLocalUI);
         }
+    } else {
+        kDebug() << "no view created, not doing context menu connection or xml replacement";
     }
 
     if (KTextEditor::CodeCompletionInterface* cc = dynamic_cast<KTextEditor::CodeCompletionInterface*>(view))
@@ -648,13 +654,14 @@ KDevelop::TextView::~TextView()
 
 QWidget * KDevelop::TextView::createWidget(QWidget * parent)
 {
+    kDebug() << "creating TEWidget for view: " << this << (this->document() ? this->document()->title() : "null" );
     TextEditorWidget* teWidget = new TextEditorWidget(this, parent);
     connect(teWidget, SIGNAL(initialized()), this, SLOT(editorInitialized()));
     connect(teWidget, SIGNAL(statusChanged()), this, SLOT(sendStatusChanged()));
 
     d->editor = teWidget;
     connect(d->editor, SIGNAL(destroyed(QObject*)), this, SLOT(editorDestroyed(QObject*)));
-    
+
     return teWidget;
 }
 
@@ -776,18 +783,25 @@ KDevelop::TextEditorWidget::~TextEditorWidget()
 
 void KDevelop::TextEditorWidget::initialize()
 {
-    if(d->view)
+    kDebug() << "initialize called:" << dynamic_cast<TextDocument*>(d->textView->document())->url();
+    if(d->view) {
+        kDebug() << "already have view";
         return;
+    }
+    kDebug() << "setting up view and selecting initial range";
     TextDocument* doc = static_cast<TextDocument*>(d->textView->document());
     KTextEditor::View* view = qobject_cast<KTextEditor::View*>(doc->createViewWidget(this));
+    kDebug() << "got view: " << view << view->document() << view->document()->url();
     KTextEditor::Range ir = d->textView->initialRange();
     selectAndReveal(view, ir);
     setEditorView(view);
+    kDebug() << "emitting initialized signal from TEWidget";
     emit initialized();
 }
 
 void KDevelop::TextEditorWidget::viewStatusChanged(KTextEditor::View* view, const KTextEditor::Cursor& )
 {
+    kDebug() << "view status changed" << view->document()->url();
     // This fetches the virtual cursor, which expands tab characters properly, i.e. instead of col == 1
     // you'll get col == 9 with this when a tab is at the start of the line.
     KTextEditor::Cursor pos = view->cursorPositionVirtual();
@@ -797,6 +811,7 @@ void KDevelop::TextEditorWidget::viewStatusChanged(KTextEditor::View* view, cons
 
 void KDevelop::TextEditorWidget::setEditorView(KTextEditor::View* view)
 {
+    kDebug() << "setting editor view";
     if (d->view)
     {
         disconnect(view, SIGNAL(cursorPositionChanged(KTextEditor::View*,KTextEditor::Cursor)));
@@ -804,6 +819,8 @@ void KDevelop::TextEditorWidget::setEditorView(KTextEditor::View* view)
     }
 
     d->view = view;
+
+    kDebug() << "inserting xml client" << view->document()->url();
     insertChildClient(d->view);
     connect(view, SIGNAL(cursorPositionChanged(KTextEditor::View*,KTextEditor::Cursor)), 
             this, SLOT(viewStatusChanged(KTextEditor::View*,KTextEditor::Cursor)));

@@ -311,6 +311,7 @@ void Container::widgetActivated(int idx)
 
 void Container::addWidget(View *view, int position)
 {
+    kDebug() << "Adding widget for view: " << view << view->document()->title();
     QWidget *w = view->widget(this);
     int idx = 0;
     if (position != -1)
@@ -342,6 +343,7 @@ void Container::addWidget(View *view, int position)
 
 void Container::statusChanged(Sublime::View* view)
 {
+    kDebug() << "status change" << view->document()->title();
     d->statusCorner->setText(view->viewStatus());
 }
 

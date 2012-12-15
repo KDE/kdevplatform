@@ -143,8 +143,10 @@ void MainWindowPrivate::removePlugin( IPlugin *plugin )
 
 void MainWindowPrivate::activePartChanged(KParts::Part *part)
 {
-    if ( Core::self()->uiController()->activeMainWindow() == m_mainWindow)
+    if ( Core::self()->uiController()->activeMainWindow() == m_mainWindow) {
+        kDebug() << "active part changed creating gui" << part << part->xmlFile();
         m_mainWindow->createGUI(part);
+    }
 }
 
 void MainWindowPrivate::changeActiveView(Sublime::View *view)
@@ -173,6 +175,7 @@ void MainWindowPrivate::changeActiveView(Sublime::View *view)
 
 void MainWindowPrivate::mergeView(Sublime::View* view)
 {
+    kDebug() << "merging view" << view << (view ? (view->document() ? view->document()->title() : "null") : "viewnull" );
     PushPositiveValue<bool> block(m_changingActiveView, true);
 
     // If the previous view was KXMLGUIClient, remove its actions
@@ -210,12 +213,14 @@ void MainWindowPrivate::mergeView(Sublime::View* view)
         }
     } else {
         // Delay initialization
+        kDebug() << "not initialized yet, connecting to signal";
         connect( view, SIGNAL(initialized(Sublime::View*)), this, SLOT(viewInitialized(Sublime::View*)) );
     }
 }
 
 void MainWindowPrivate::viewInitialized(Sublime::View* view)
 {
+    kDebug() << "view initialized, merging" << view << (view ? ( view->document() ? view->document()->title() : "null" ) : "viewnull" );
     mergeView(view);
 }
 

@@ -606,6 +606,7 @@ QStringList PluginController::allPluginNames()
 
 QList<ContextMenuExtension> PluginController::queryPluginsForContextMenuExtensions( KDevelop::Context* context ) const
 {
+    kDebug() << "Querying plugins for context menu extensions";
     QList<ContextMenuExtension> exts;
     Q_FOREACH( const KPluginInfo& info, d->loadedPlugins.keys() )
     {
