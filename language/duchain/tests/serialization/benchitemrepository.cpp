@@ -124,7 +124,7 @@ void BenchItemRepository::cleanupTestCase()
 QVector<QString> generateData()
 {
   QVector<QString> data;
-  static const int NUM_ITEMS = 100000;
+  static const int NUM_ITEMS = 1000000;
   data.resize(NUM_ITEMS);
   for(int i = 0; i < NUM_ITEMS; ++i) {
     data[i] = QString("/foo/%1").arg(i);
@@ -152,7 +152,6 @@ void BenchItemRepository::insert()
     indices = insertData(data, repo);
     repo.store();
   }
-  Q_ASSERT(indices.size() == indices.toList().toSet().size());
   Q_ASSERT(indices.size() == data.size());
   QCOMPARE(repo.statistics().totalItems, uint(data.size()));
 }
