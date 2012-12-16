@@ -13,3 +13,15 @@ target_link_libraries(benchitemrepository
   ${KDEVPLATFORM_TESTS_LIBRARIES}
   ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
 )
+
+########### next target ###############
+
+set(benchindexedstring_SRCS benchindexedstring.cpp)
+
+kde4_add_unit_test(benchindexedstring ${benchindexedstring_SRCS})
+target_link_libraries(benchindexedstring
+  ${KDE4_KDECORE_LIBS}
+  ${QT_QTTEST_LIBRARY}
+  ${KDEVPLATFORM_TESTS_LIBRARIES}
+  ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
+)
