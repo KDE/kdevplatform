@@ -116,11 +116,12 @@ struct IndexedStringNGRepositoryItemRequest
 };
 
 ///TODO: do not lock inside the repo, only do it externally
-typedef ItemRepository<IndexedStringNGData, IndexedStringNGRepositoryItemRequest, false, true> IndexedStringNGRepository;
+typedef ItemRepository<IndexedStringNGData, IndexedStringNGRepositoryItemRequest, false, false> IndexedStringNGRepository;
 
 RepositoryManager<IndexedStringNGRepository>& getGlobalIndexedStringNGRepository()
 {
-  static RepositoryManager<IndexedStringNGRepository> globalIndexedStringNGRepository("String Index NG");
+  static RepositoryManager<IndexedStringNGRepository> globalIndexedStringNGRepository("String Index NG",
+                                                                                      new QMutex(QMutex::NonRecursive));
   return globalIndexedStringNGRepository;
 }
 
@@ -209,6 +210,7 @@ QString IndexedStringNG::toString() const
   } else if((m_index & 0xffff0000) == 0xffff0000) {
     return QString(QChar((ushort)m_index & 0xff));
   } else {
+    QMutexLocker lock(getGlobalIndexedStringNGRepository()->mutex());
     return getGlobalIndexedStringNGRepository()->itemFromIndex(m_index)->string();
   }
 }
@@ -225,6 +227,7 @@ int IndexedStringNG::lengthFromIndex(uint index)
   } else if ((index & 0xffff0000) == 0xffff0000) {
     return 1;
   } else {
+    QMutexLocker lock(getGlobalIndexedStringNGRepository()->mutex());
     return getGlobalIndexedStringNGRepository()->itemFromIndex(index)->length;
   }
 }
