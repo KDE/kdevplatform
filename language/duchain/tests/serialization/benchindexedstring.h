@@ -34,7 +34,11 @@ private slots:
     void index();
     void length();
     void qstring();
+    void qbytearray();
+    void kurl();
+    void indexForString();
     void hash();
+    void qt_hash();
 };
 
 #endif // BENCHINDEXEDSTRING_H

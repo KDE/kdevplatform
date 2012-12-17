@@ -65,7 +65,7 @@ void BenchIndexedString::index()
   }
 }
 
-void BenchIndexedString::length()
+QVector<uint> setupTest()
 {
   QVector<QString> data = generateData();
   QVector<uint> indices;
@@ -74,6 +74,12 @@ void BenchIndexedString::length()
     IndexedString idx(item);
     indices << idx.index();
   }
+  return indices;
+}
+
+void BenchIndexedString::length()
+{
+  QVector<uint> indices = setupTest();
   QBENCHMARK {
     foreach(uint index, indices) {
       IndexedString str = IndexedString::fromIndex(index);
@@ -84,17 +90,43 @@ void BenchIndexedString::length()
 
 void BenchIndexedString::qstring()
 {
-  QVector<QString> data = generateData();
-  QVector<uint> indices;
-  indices.reserve(data.size());
-  foreach(const QString& item, data) {
-    IndexedString idx(item);
-    indices << idx.index();
-  }
+  QVector<uint> indices = setupTest();
   QBENCHMARK {
     foreach(uint index, indices) {
       IndexedString str = IndexedString::fromIndex(index);
       str.str();
+    }
+  }
+}
+
+void BenchIndexedString::qbytearray()
+{
+  QVector<uint> indices = setupTest();
+  QBENCHMARK {
+    foreach(uint index, indices) {
+      IndexedString str = IndexedString::fromIndex(index);
+      str.byteArray();
+    }
+  }
+}
+
+void BenchIndexedString::kurl()
+{
+  QVector<uint> indices = setupTest();
+  QBENCHMARK {
+    foreach(uint index, indices) {
+      IndexedString str = IndexedString::fromIndex(index);
+      str.toUrl();
+    }
+  }
+}
+
+void BenchIndexedString::indexForString()
+{
+  QVector<QString> data = generateData();
+  QBENCHMARK {
+    foreach(const QString& item, data) {
+      IndexedString::indexForString(item);
     }
   }
 }
@@ -106,6 +138,16 @@ void BenchIndexedString::hash()
     foreach(const QString& item, data) {
       const QByteArray strArr = item.toUtf8();
       IndexedString::hashString(strArr.constData(), strArr.length());
+    }
+  }
+}
+
+void BenchIndexedString::qt_hash()
+{
+  QVector<QString> data = generateData();
+  QBENCHMARK {
+    foreach(const QString& item, data) {
+      qHash(item);
     }
   }
 }
