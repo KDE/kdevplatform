@@ -131,7 +131,7 @@ void BenchIndexedString::indexForString()
   }
 }
 
-void BenchIndexedString::hash()
+void BenchIndexedString::hashString()
 {
   QVector<QString> data = generateData();
   QBENCHMARK {
@@ -142,12 +142,23 @@ void BenchIndexedString::hash()
   }
 }
 
-void BenchIndexedString::qt_hash()
+void BenchIndexedString::hashIndexed()
 {
-  QVector<QString> data = generateData();
+  QVector<uint> indices = setupTest();
   QBENCHMARK {
-    foreach(const QString& item, data) {
-      qHash(item);
+    foreach(uint index, indices) {
+      qHash(IndexedString::fromIndex(index));
+    }
+  }
+}
+
+void BenchIndexedString::qSet()
+{
+  QVector<uint> indices = setupTest();
+  QSet<IndexedString> set;
+  QBENCHMARK {
+    foreach(uint index, indices) {
+      set.insert(IndexedString::fromIndex(index));
     }
   }
 }

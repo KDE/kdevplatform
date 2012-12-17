@@ -37,8 +37,9 @@ private slots:
     void qbytearray();
     void kurl();
     void indexForString();
-    void hash();
-    void qt_hash();
+    void hashString();
+    void hashIndexed();
+    void qSet();
 };
 
 #endif // BENCHINDEXEDSTRING_H
