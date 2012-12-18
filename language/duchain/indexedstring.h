@@ -1,15 +1,24 @@
-/***************************************************************************
-   Copyright 2008 David Nolden <david.nolden.kdevelop@art-master.de>
-***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/*
+ * This file is part of KDevelop
+ * Copyright 2012 Milian Wolff <mail@milianw.de>
+ * Copyright 2008 David Nolden <david.nolden.kdevelop@art-master.de>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License or (at your option) version 3 or any later version
+ * accepted by the membership of KDE e.V. (or its successor approved
+ * by the membership of KDE e.V.), which shall act as a proxy
+ * defined in Section 14 of version 3 of the license.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef INDEXED_STRING_H
 #define INDEXED_STRING_H
@@ -18,20 +27,23 @@
 
 #include <QtCore/QMetaType>
 
-#include "../languageexport.h"
+#include <KUrl>
 
-#include <language/duchain/referencecounting.h>
-
-class KUrl;
-
-namespace KDevelop {
-class IndexedString;
-}
+#include <language/languageexport.h>
 
 namespace KDevelop {
 
 /**
- * This string does "disk reference-counting", which means that reference-counts are maintainted,
+ * This class gives an indexed, i.e. serialized version of a QString.
+ *
+ * You can use this to persistently store strings or efficientlly store them
+ * in a hash or similar.
+ *
+ * @note Serializing a QString followed by a deserialization will break the
+ * implicit sharing. Thus alwasy prefer to use existing QStrings directly
+ * if possible. Alternatively, only use the deserialized strings temporarily.
+ *
+ * @note This string does "disk reference-counting", which means that reference-counts are maintainted,
  * but only when the string is in a disk-stored location. The file referencecounting.h is used
  * to manage this condition.
  *
@@ -50,41 +62,47 @@ namespace KDevelop {
  * @note Strings of length one are not put into the repository, but are encoded directly within
  * the index: They are encoded like @c 0xffff00bb where @c bb is the byte of the character.
  */
-class KDEVPLATFORMLANGUAGE_EXPORT IndexedString {
- public:
+class KDEVPLATFORMLANGUAGE_EXPORT IndexedString
+{
+public:
+  /**
+   * Create an empty IndexedString.
+   */
   IndexedString();
-  /**
-   * @param str must be a utf8 encoded string, does not need to be 0-terminated.
-   * @param length must be its length in bytes.
-   * @param hash must be a hash as constructed with the here defined hash functions.
-   *             If it is zero, it will be computed.
-   */
-  explicit IndexedString( const char* str, unsigned short length, unsigned int hash = 0 );
 
   /**
-   * Needs a zero terminated string. When the information is already available,
-   * try using the other constructor.
+   * Index the given char @p c.
+   */
+  explicit IndexedString(QChar c);
+
+  /**
+   * Index the given @p string.
+   */
+  explicit IndexedString(const QString& string);
+
+  /**
+   * Index the given @p KUrl.
    *
-   * WARNING There is a UTF8-related issue when attempting to retrieve the string
-   * using str from an IndexedString built from this constructor
+   * NOTE: This is expensive.
+   *
+   * TODO: This should be replaced by a IndexedPath eventually.
    */
-  explicit IndexedString( const char* str );
-
-  explicit IndexedString( char c );
+  explicit IndexedString(const KUrl& url);
 
   /**
-   * When the information is already available, try using the other constructor.
-   *
-   * @note This is expensive.
+   * Copy constructor.
    */
-  explicit IndexedString( const QString& str );
+  IndexedString(const IndexedString& other);
 
   /**
-   * When the information is already available, try using the other constructor.
-   *
-   * @note This is expensive.
+   * Assignment operator.
    */
-  explicit IndexedString( const QByteArray& str );
+  IndexedString& operator=(const IndexedString&);
+
+  /**
+   * Destructor.
+   */
+  ~IndexedString();
 
   /**
    * Returns a not reference-counted IndexedString that represents the given index.
@@ -92,37 +110,11 @@ class KDEVPLATFORMLANGUAGE_EXPORT IndexedString {
    * @warning It is dangerous dealing with indices directly, because it may break
    *          the reference counting logic never stay pure indices to disk
    */
-  static IndexedString fromIndex( unsigned int index ) {
+  static IndexedString fromIndex(uint index)
+  {
     IndexedString ret;
     ret.m_index = index;
     return ret;
-  }
-
-  /**
-   * @warning This is relatively expensive: needs a mutex lock, hash lookups, and eventual loading,
-   *       so avoid it when possible.
-   */
-  static int lengthFromIndex(unsigned int index);
-
-  IndexedString( const IndexedString& );
-
-  ~IndexedString();
-
-  /**
-   * Creates an indexed string from a KUrl, this is expensive.
-   */
-  explicit IndexedString( const KUrl& url );
-
-  /**
-   * Re-construct a KUrl from this indexed string, the result can be used with the
-   * KUrl-using constructor.
-   *
-   * @note This is expensive.
-   */
-  KUrl toUrl() const;
-
-  inline unsigned int hash() const {
-    return m_index;
   }
 
   /**
@@ -131,11 +123,21 @@ class KDEVPLATFORMLANGUAGE_EXPORT IndexedString {
    * @warning It is dangerous dealing with indices directly, because it may break the
    *          reference counting logic. never store pure indices to disk
    */
-  inline unsigned int index() const {
+  inline uint index() const
+  {
     return m_index;
   }
 
-  bool isEmpty() const {
+  /**
+   * The index can directly be used as a non-cryptographic hash.
+   */
+  inline uint hash() const
+  {
+    return m_index;
+  }
+
+  bool isEmpty() const
+  {
     return m_index == 0;
   }
 
@@ -146,96 +148,78 @@ class KDEVPLATFORMLANGUAGE_EXPORT IndexedString {
   int length() const;
 
   /**
-   * Returns the underlying c string, in utf-8 encoding.
+   * @warning This is relatively expensive: needs a mutex lock, hash lookups, and eventual loading,
+   *       so avoid it when possible.
+   */
+  static int lengthFromIndex(uint index);
+
+  /**
+   * Lookup and return the string for this index.
+   */
+  QString toString() const;
+
+  KDE_DEPRECATED QString str() const
+  {
+    return toString();
+  }
+
+  /**
+   * Lookup and return the string for this index and convert it to a KUrl.
    *
-   * @warning The string is not 0-terminated, consider length()!
+   * NOTE: This is expensive.
+   *
+   * TODO: This should be replaced by a IndexedPath eventually.
    */
-  const char* c_str() const;
-
-  /**
-   * Convenience function, avoid using it, it's relatively expensive
-   */
-  QString str() const;
-
-  /**
-   * Convenience function, avoid using it, it's relatively expensive (less expensive then str() though)
-   */
-  QByteArray byteArray() const;
-
-  IndexedString& operator=(const IndexedString&);
+  KUrl toUrl() const
+  {
+    return KUrl(toString());
+  }
 
   /**
    * Fast index-based comparison
    */
-  bool operator == ( const IndexedString& rhs ) const {
+  bool operator == ( const IndexedString& rhs ) const
+  {
     return m_index == rhs.m_index;
   }
 
   /**
    * Fast index-based comparison
    */
-  bool operator != ( const IndexedString& rhs ) const {
+  bool operator != ( const IndexedString& rhs ) const
+  {
     return m_index != rhs.m_index;
   }
 
   /**
    * Does not compare alphabetically, uses the index for ordering.
    */
-  bool operator < ( const IndexedString& rhs ) const {
+  bool operator < ( const IndexedString& rhs ) const
+  {
     return m_index < rhs.m_index;
   }
 
-  /**
-   * Use this to construct a hash-value on-the-fly
-   *
-   * To read it, just use the hash member, and when a new string is started, call @c clear().
-   *
-   * This needs very fast performance(per character operation), so it must stay inlined.
-   */
-  struct RunningHash {
-    enum {
-      HashInitialValue = 5381
-    };
-
-    RunningHash() : hash(HashInitialValue) { //We initialize the hash with zero, because we want empty strings to create a zero hash(invalid)
-    }
-    inline void append(const char c) {
-      hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-    }
-    inline void clear() {
-      hash = HashInitialValue;
-    }
-    unsigned int hash;
-  };
-
-  static unsigned int hashString(const char* str, unsigned short length);
-
-  /**
-   * Optimized function that only computes the index of a string
-   * removes the overhead of the IndexedString ref counting
-   */
-  static uint indexForString(const char* str, unsigned short length, uint hash = 0);
-  static uint indexForString(const QString& str, uint hash = 0);
-
- private:
-   explicit IndexedString(bool);
-   uint m_index;
+private:
+  explicit IndexedString(bool);
+  uint m_index;
 };
 
-// the following function would need to be exported in case you'd remove the inline keyword.
-inline uint qHash( const KDevelop::IndexedString& str ) {
-  return str.index();
+/**
+ * Hash function for Qt containers like QHash/QSet.
+ */
+inline uint qHash( const KDevelop::IndexedString& str )
+{
+  return str.hash();
 }
 
 }
-
 
 /**
- * kDebug() stream operator.  Writes the string to the debug output.
+ * qDebug() stream operator: Writes the string to the debug output.
  */
 KDEVPLATFORMLANGUAGE_EXPORT QDebug operator<<(QDebug s, const KDevelop::IndexedString& string);
 
 Q_DECLARE_METATYPE(KDevelop::IndexedString);
 Q_DECLARE_TYPEINFO(KDevelop::IndexedString, Q_MOVABLE_TYPE);
 
-#endif
+#endif // INDEXED_STRING_H

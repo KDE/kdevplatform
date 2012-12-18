@@ -40,6 +40,9 @@ private slots:
     void hashString();
     void hashIndexed();
     void qSet();
+
+    void test();
+    void test_data();
 };
 
 #endif // BENCHINDEXEDSTRING_H

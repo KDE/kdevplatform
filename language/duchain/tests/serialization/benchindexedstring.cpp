@@ -94,18 +94,7 @@ void BenchIndexedString::qstring()
   QBENCHMARK {
     foreach(uint index, indices) {
       IndexedString str = IndexedString::fromIndex(index);
-      str.str();
-    }
-  }
-}
-
-void BenchIndexedString::qbytearray()
-{
-  QVector<uint> indices = setupTest();
-  QBENCHMARK {
-    foreach(uint index, indices) {
-      IndexedString str = IndexedString::fromIndex(index);
-      str.byteArray();
+      str.toString();
     }
   }
 }
@@ -121,23 +110,12 @@ void BenchIndexedString::kurl()
   }
 }
 
-void BenchIndexedString::indexForString()
-{
-  QVector<QString> data = generateData();
-  QBENCHMARK {
-    foreach(const QString& item, data) {
-      IndexedString::indexForString(item);
-    }
-  }
-}
-
 void BenchIndexedString::hashString()
 {
   QVector<QString> data = generateData();
   QBENCHMARK {
     foreach(const QString& item, data) {
-      const QByteArray strArr = item.toUtf8();
-      IndexedString::hashString(strArr.constData(), strArr.length());
+      qHash(item);
     }
   }
 }
@@ -161,6 +139,26 @@ void BenchIndexedString::qSet()
       set.insert(IndexedString::fromIndex(index));
     }
   }
+}
+
+void BenchIndexedString::test()
+{
+  QFETCH(QString, data);
+
+  IndexedString indexed(data);
+  QCOMPARE(indexed.toString(), data);
+  QCOMPARE(indexed.length(), data.length());
+}
+
+void BenchIndexedString::test_data()
+{
+  QTest::addColumn<QString>("data");
+
+  QTest::newRow("empty") << QString();
+  QTest::newRow("char-ascii") << QString("a");
+  QTest::newRow("char-utf8") << QString::fromUtf8("ä");
+  QTest::newRow("string-ascii") << QString::fromAscii("asdf()?=");
+  QTest::newRow("string-utf8") << QString::fromUtf8("æſðđäöü");
 }
 
 #include "benchindexedstring.moc"
