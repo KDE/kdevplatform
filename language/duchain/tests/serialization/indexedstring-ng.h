@@ -34,7 +34,16 @@
 namespace KDevelop {
 
 /**
- * This string does "disk reference-counting", which means that reference-counts are maintainted,
+ * This class gives an indexed, i.e. serialized version of a QString.
+ *
+ * You can use this to persistently store strings or efficientlly store them
+ * in a hash or similar.
+ *
+ * @note Serializing a QString followed by a deserialization will break the
+ * implicit sharing. Thus alwasy prefer to use existing QStrings directly
+ * if possible. Alternatively, only use the deserialized strings temporarily.
+ *
+ * @note This string does "disk reference-counting", which means that reference-counts are maintainted,
  * but only when the string is in a disk-stored location. The file referencecounting.h is used
  * to manage this condition.
  *
@@ -53,7 +62,8 @@ namespace KDevelop {
  * @note Strings of length one are not put into the repository, but are encoded directly within
  * the index: They are encoded like @c 0xffff00bb where @c bb is the byte of the character.
  */
-class KDEVPLATFORMLANGUAGE_EXPORT IndexedStringNG {
+class KDEVPLATFORMLANGUAGE_EXPORT IndexedStringNG
+{
 public:
   /**
    * Create an empty IndexedStringNG.
@@ -104,7 +114,7 @@ public:
    * @warning It is dangerous dealing with indices directly, because it may break the
    *          reference counting logic. never store pure indices to disk
    */
-  inline unsigned int index() const
+  inline uint index() const
   {
     return m_index;
   }
@@ -133,6 +143,8 @@ public:
 
   /**
    * Lookup and return the string for this index and convert it to a KUrl.
+   *
+   * NOTE: This is expensive.
    */
   KUrl toUrl() const
   {
@@ -168,7 +180,9 @@ private:
   uint m_index;
 };
 
-// the following function would need to be exported in case you'd remove the inline keyword.
+/**
+ * Hash function for Qt containers like QHash/QSet.
+ */
 inline uint qHash( const KDevelop::IndexedStringNG& str )
 {
   return str.index();

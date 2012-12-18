@@ -175,7 +175,8 @@ IndexedStringNG::IndexedStringNG(const QString& string)
     QMutexLocker lock(getGlobalIndexedStringNGRepository()->mutex());
     m_index = getGlobalIndexedStringNGRepository()->index(IndexedStringNGRepositoryItemRequest(string));
 
-    //TODO: merge
+    //TODO: this could be merged with the above if the ItemRepository API got a
+    //      Action argument for the index member function.
     if (shouldDoDUChainReferenceCounting(this)) {
       increase(getGlobalIndexedStringNGRepository()->dynamicItemFromIndexSimple(m_index)->refCount);
     }
