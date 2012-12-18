@@ -89,10 +89,6 @@ struct IndexedStringNGRepositoryItemRequest
     item->length = m_str.length();
     item->refCount = 0;
     memcpy(item+1, m_str.constData(), m_str.length() * sizeof(QChar));
-    Q_ASSERT(item->length == m_str.length());
-    Q_ASSERT(item->refCount == 0);
-    Q_ASSERT(m_str == item->string());
-    Q_ASSERT(item->hash() == m_hash);
   }
 
   static void destroy(IndexedStringNGData* item, KDevelop::AbstractItemRepository&)
@@ -115,7 +111,6 @@ struct IndexedStringNGRepositoryItemRequest
   QString m_str;
 };
 
-///TODO: do not lock inside the repo, only do it externally
 typedef ItemRepository<IndexedStringNGData, IndexedStringNGRepositoryItemRequest, false, false> IndexedStringNGRepository;
 
 RepositoryManager<IndexedStringNGRepository>& getGlobalIndexedStringNGRepository()
@@ -125,6 +120,38 @@ RepositoryManager<IndexedStringNGRepository>& getGlobalIndexedStringNGRepository
   return globalIndexedStringNGRepository;
 }
 
+/**
+ * Emplace the unicode value of @p c in the upper four bytes of the index
+ */
+inline uint charToIndex(QChar c)
+{
+  return 0xffff0000 | c.unicode();
+}
+
+/**
+ * Read the unicode value of @p index emplaced in the upper four bytes.
+ */
+inline QChar indexToChar(uint index)
+{
+  return QChar((ushort)index & 0xff);
+}
+
+/**
+ * Check whether the index is a char
+ */
+inline bool isChar(uint index)
+{
+  return (index & 0xffff0000) == 0xffff0000;
+}
+
+/**
+ * Check whether the index is non-trivial
+ */
+inline uint isNonTrivial(uint index)
+{
+  return index && !isChar(index);
+}
+
 }
 
 IndexedStringNG::IndexedStringNG()
@@ -132,9 +159,9 @@ IndexedStringNG::IndexedStringNG()
 {
 }
 
+
 IndexedStringNG::IndexedStringNG(QChar c)
-///TODO: test for unicode chars
-: m_index(0xffff0000 | c.unicode())
+: m_index(charToIndex(c))
 {
 }
 
@@ -143,8 +170,7 @@ IndexedStringNG::IndexedStringNG(const QString& string)
   if (string.isEmpty()) {
     m_index = 0;
   } else if (string.length() == 1) {
-    ///TODO: test for unicode chars
-    m_index = 0xffff0000 | string.at(0).unicode();
+    m_index = charToIndex(string.at(0));
   } else {
     QMutexLocker lock(getGlobalIndexedStringNGRepository()->mutex());
     m_index = getGlobalIndexedStringNGRepository()->index(IndexedStringNGRepositoryItemRequest(string));
@@ -156,8 +182,9 @@ IndexedStringNG::IndexedStringNG(const QString& string)
   }
 }
 
-IndexedStringNG::~IndexedStringNG() {
-  if (m_index && (m_index & 0xffff0000) != 0xffff0000) {
+IndexedStringNG::~IndexedStringNG()
+{
+  if (isNonTrivial(m_index)) {
     if (shouldDoDUChainReferenceCounting(this)) {
       QMutexLocker lock(getGlobalIndexedStringNGRepository()->mutex());
       decrease(getGlobalIndexedStringNGRepository()->dynamicItemFromIndexSimple(m_index)->refCount);
@@ -168,7 +195,7 @@ IndexedStringNG::~IndexedStringNG() {
 IndexedStringNG::IndexedStringNG(const IndexedStringNG& rhs)
 : m_index(rhs.m_index)
 {
-  if (m_index && (m_index & 0xffff0000) != 0xffff0000) {
+  if (isNonTrivial(m_index)) {
     if (shouldDoDUChainReferenceCounting(this)) {
       QMutexLocker lock(getGlobalIndexedStringNGRepository()->mutex());
       increase(getGlobalIndexedStringNGRepository()->dynamicItemFromIndexSimple(m_index)->refCount);
@@ -183,7 +210,7 @@ IndexedStringNG& IndexedStringNG::operator=(const IndexedStringNG& rhs)
   }
 
   // decrease refcount of current/old index
-  if (m_index && (m_index & 0xffff0000) != 0xffff0000) {
+  if (isNonTrivial(m_index)) {
     if (shouldDoDUChainReferenceCounting(this)) {
       QMutexLocker lock(getGlobalIndexedStringNGRepository()->mutex());
       decrease(getGlobalIndexedStringNGRepository()->dynamicItemFromIndexSimple(m_index)->refCount);
@@ -193,7 +220,7 @@ IndexedStringNG& IndexedStringNG::operator=(const IndexedStringNG& rhs)
   m_index = rhs.m_index;
 
   // increase refcount for new index
-  if (m_index && (m_index & 0xffff0000) != 0xffff0000) {
+  if (isNonTrivial(m_index)) {
     if(shouldDoDUChainReferenceCounting(this)) {
       QMutexLocker lock(getGlobalIndexedStringNGRepository()->mutex());
       increase(getGlobalIndexedStringNGRepository()->dynamicItemFromIndexSimple(m_index)->refCount);
@@ -207,8 +234,8 @@ QString IndexedStringNG::toString() const
 {
   if (!m_index) {
     return QString();
-  } else if((m_index & 0xffff0000) == 0xffff0000) {
-    return QString(QChar((ushort)m_index & 0xff));
+  } else if(isChar(m_index)) {
+    return QString(indexToChar(m_index));
   } else {
     QMutexLocker lock(getGlobalIndexedStringNGRepository()->mutex());
     return getGlobalIndexedStringNGRepository()->itemFromIndex(m_index)->string();
@@ -224,7 +251,7 @@ int IndexedStringNG::lengthFromIndex(uint index)
 {
   if(!index) {
     return 0;
-  } else if ((index & 0xffff0000) == 0xffff0000) {
+  } else if (isChar(index)) {
     return 1;
   } else {
     QMutexLocker lock(getGlobalIndexedStringNGRepository()->mutex());
