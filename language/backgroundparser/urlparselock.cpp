@@ -21,14 +21,20 @@
 #include "urlparselock.h"
 
 #include <QThread>
+#include <QMutex>
+
+#include <unistd.h>
 
 namespace KDevelop {
 
 ///Facilities to prevent multiple parse-jobs from processing the same url.
 QMutex urlParseMutex;
-QMap<IndexedString, QPair<QThread*, uint> > parsingUrls;
+QHash<IndexedString, QPair<QThread*, uint> > parsingUrls;
 
-UrlParseLock::UrlParseLock(IndexedString url) : m_url(url) {
+///TODO: cleanup this code, esp. the sleep(1) makes me cringe (milian)
+UrlParseLock::UrlParseLock(const IndexedString& url)
+: m_url(url)
+{
   QMutexLocker lock(&urlParseMutex);
   while(parsingUrls.contains(m_url) && parsingUrls[m_url].first != QThread::currentThread()) {
     //Wait here until no other thread is updating parsing the url
@@ -42,7 +48,8 @@ UrlParseLock::UrlParseLock(IndexedString url) : m_url(url) {
     parsingUrls.insert(m_url, qMakePair(QThread::currentThread(), 1u));
 }
 
-UrlParseLock::~UrlParseLock() {
+UrlParseLock::~UrlParseLock()
+{
   QMutexLocker lock(&urlParseMutex);
   Q_ASSERT(parsingUrls.contains(m_url));
   Q_ASSERT(parsingUrls[m_url].first == QThread::currentThread());
