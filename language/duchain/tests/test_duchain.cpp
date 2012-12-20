@@ -335,12 +335,11 @@ void TestDUChain::testIndexedStrings() {
     int length = rand() % 10;
     for(int b = 0; b < length; ++b)
       testString.append((char)(rand() % 6) + 'a');
-    QByteArray array = testString.toUtf8();
     //kDebug() << "checking with" << testString;
     //kDebug() << "checking" << a;
-    IndexedString indexed(array.constData(), array.size(), IndexedString::hashString(array.constData(), array.size()));
+    IndexedString indexed(testString);
 
-    QCOMPARE(indexed.str(), testString);
+    QCOMPARE(indexed.toString(), testString);
     if(knownIndices.contains(testString)) {
       QCOMPARE(indexed.index(), knownIndices[testString].index());
     } else {
@@ -608,7 +607,7 @@ void TestDUChain::testImportCache()
 
 void TestDUChain::benchCodeModel()
 {
-  const IndexedString file("testFile");
+  const IndexedString file(QLatin1String("testFile"));
 
   QVERIFY(!QTypeInfo< KDevelop::CodeModelItem >::isStatic);
 
