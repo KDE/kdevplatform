@@ -21,26 +21,29 @@
 
 #include "projectmodel.h"
 
-#include <kmimetype.h>
+#include <KMimeType>
+#include <KDebug>
+#include <KLocalizedString>
+#include <KMessageBox>
+
+#include <kio/udsentry.h>
+#include <kio/netaccess.h>
 
 #include <QApplication>
 #include <QPalette>
 #include <QBrush>
 #include <QColor>
 #include <QFileInfo>
-#include <kdebug.h>
+#include <QMetaClassInfo>
+#include <QThread>
+#include <QMutex>
 
 #include <interfaces/iproject.h>
 #include <interfaces/iprojectcontroller.h>
 #include <interfaces/icore.h>
-#include "interfaces/iprojectfilemanager.h"
+#include <interfaces/iprojectfilemanager.h>
+
 #include <language/duchain/indexedstring.h>
-#include <KLocalizedString>
-#include <KMessageBox>
-#include <kio/udsentry.h>
-#include <kio/netaccess.h>
-#include <QMetaClassInfo>
-#include <QThread>
 
 // Utility function to determine between direct connection and blocking-queued-connection
 // for emitting of signals for data changes/row addition/removal
