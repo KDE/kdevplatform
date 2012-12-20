@@ -106,11 +106,6 @@ QStringList joinProjectBasePath( const QStringList& partialpath, KDevelop::Proje
     return basePath + partialpath;
 }
 
-inline uint indexForUrl(const KUrl& url)
-{
-    return IndexedString::indexForString(url.pathOrUrl(KUrl::RemoveTrailingSlash));
-}
-
 class ProjectModelPrivate
 {
 public:
@@ -130,13 +125,13 @@ public:
     }
 
     // a hash of IndexedString::indexForString(url) <-> ProjectBaseItem for fast lookup
-    QMultiHash<uint, ProjectBaseItem*> urlLookupTable;
+    QMultiHash<IndexedString, ProjectBaseItem*> urlLookupTable;
 };
 
 class ProjectBaseItemPrivate
 {
 public:
-    ProjectBaseItemPrivate() : project(0), parent(0), row(-1), model(0), m_urlIndex(0) {}
+    ProjectBaseItemPrivate() : project(0), parent(0), row(-1), model(0) {}
     IProject* project;
     ProjectBaseItem* parent;
     int row;
@@ -146,10 +141,9 @@ public:
     Qt::ItemFlags flags;
     ProjectModel* model;
     KUrl m_url;
-    uint m_urlIndex;
+    IndexedString m_indexedUrl;
     QString iconName;
 };
-
 
 ProjectBaseItem::ProjectBaseItem( IProject* project, const QString &name, ProjectBaseItem *parent )
         : d_ptr(new ProjectBaseItemPrivate)
@@ -168,8 +162,8 @@ ProjectBaseItem::~ProjectBaseItem()
 {
     Q_D(ProjectBaseItem);
 
-    if (model() && d->m_urlIndex) {
-        model()->d->urlLookupTable.remove(d->m_urlIndex, this);
+    if (model() && d->m_indexedUrl.isValid()) {
+        model()->d->urlLookupTable.remove(d->m_indexedUrl, this);
     }
 
     if( parent() ) {
@@ -325,14 +319,14 @@ void ProjectBaseItem::setModel( ProjectModel* model )
         return;
     }
 
-    if (d->model && d->m_urlIndex) {
-        d->model->d->urlLookupTable.remove(d->m_urlIndex, this);
+    if (d->model && d->m_indexedUrl.isValid()) {
+        d->model->d->urlLookupTable.remove(d->m_indexedUrl, this);
     }
 
     d->model = model;
 
-    if (model && d->m_urlIndex) {
-        model->d->urlLookupTable.insert(d->m_urlIndex, this);
+    if (model && d->m_indexedUrl.isValid()) {
+        model->d->urlLookupTable.insert(d->m_indexedUrl, this);
     }
 
     foreach( ProjectBaseItem* item, d->children ) {
@@ -457,17 +451,17 @@ void ProjectBaseItem::setUrl( const KUrl& url )
 {
     Q_D(ProjectBaseItem);
 
-    if (model() && d->m_urlIndex) {
-        model()->d->urlLookupTable.remove(d->m_urlIndex, this);
+    if (model() && d->m_indexedUrl.isValid()) {
+        model()->d->urlLookupTable.remove(d->m_indexedUrl, this);
     }
 
     d->m_url = url;
-    d->m_urlIndex = indexForUrl(url);
+    d->m_indexedUrl = IndexedString(url);
     const QString baseName = url.fileName();
     setText( baseName );
 
-    if (model() && d->m_urlIndex) {
-        model()->d->urlLookupTable.insert(d->m_urlIndex, this);
+    if (model() && d->m_indexedUrl.isValid()) {
+        model()->d->urlLookupTable.insert(d->m_indexedUrl, this);
     }
 }
 
@@ -597,7 +591,7 @@ void ProjectFolderItem::setUrl( const KUrl& url )
     KUrl copy(url);
     copy.adjustPath(KUrl::AddTrailingSlash);
     ProjectBaseItem::setUrl(copy);
-    
+
     propagateRename(url);
 }
 
@@ -718,14 +712,14 @@ ProjectFileItem::ProjectFileItem( IProject* project, const KUrl & file, ProjectB
 
 ProjectFileItem::~ProjectFileItem()
 {
-    if( project() && d_ptr->m_urlIndex ) {
+    if( project() && d_ptr->m_indexedUrl.isValid() ) {
         project()->removeFromFileSet( indexedUrl() );
     }
 }
 
 IndexedString ProjectFileItem::indexedUrl() const
 {
-    return IndexedString::fromIndex( d_ptr->m_urlIndex );
+    return d_ptr->m_indexedUrl;
 }
 
 ProjectBaseItem::RenameStatus ProjectFileItem::rename(const QString& newname)
@@ -848,14 +842,14 @@ void ProjectFileItem::setUrl( const KUrl& url )
         return;
     }
 
-    if( project() && d_ptr->m_urlIndex ) {
+    if( project() && d_ptr->m_indexedUrl.isValid() ) {
         // remove from fileset if we are in there
         project()->removeFromFileSet( indexedUrl() );
     }
 
     ProjectBaseItem::setUrl( url );
 
-    if( project() && d_ptr->m_urlIndex ) {
+    if( project() && d_ptr->m_indexedUrl.isValid() ) {
         // add to fileset with new url index
         project()->addToFileSet( indexedUrl() );
     }
@@ -1118,12 +1112,12 @@ QList< ProjectBaseItem* > ProjectModel::itemsForUrl ( const KUrl& url ) const
         return QList<ProjectBaseItem*>();
     }
 
-    return d->urlLookupTable.values(indexForUrl(url));
+    return d->urlLookupTable.values(IndexedString(url));
 }
 
 ProjectBaseItem* ProjectModel::itemForUrl(const IndexedString& url) const
 {
-    return d->urlLookupTable.value(url.index());
+    return d->urlLookupTable.value(url);
 }
 
 void ProjectVisitor::visit( ProjectModel* model )
