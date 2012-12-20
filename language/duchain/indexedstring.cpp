@@ -166,7 +166,7 @@ IndexedString::IndexedString(QChar c)
 {
 }
 
-uint indexString(const QString& string)
+uint indexString(const QString& string, IndexedString* item)
 {
   if (string.isEmpty()) {
     return 0;
@@ -178,7 +178,7 @@ uint indexString(const QString& string)
 
     //TODO: this could be merged with the above if the ItemRepository API got a
     //      Action argument for the index member function.
-    if (shouldDoDUChainReferenceCounting(this)) {
+    if (shouldDoDUChainReferenceCounting(item)) {
       increase(getGlobalIndexedStringRepository()->dynamicItemFromIndexSimple(index)->refCount);
     }
     return index;
@@ -186,12 +186,12 @@ uint indexString(const QString& string)
 }
 
 IndexedString::IndexedString(const QString& string)
-: m_index(indexString(string))
+: m_index(indexString(string, this))
 {
 }
 
 IndexedString::IndexedString(const KUrl& url)
-: m_index(indexString(url.pathOrUrl()))
+: m_index(indexString(url.pathOrUrl(), this))
 {
 }
 
