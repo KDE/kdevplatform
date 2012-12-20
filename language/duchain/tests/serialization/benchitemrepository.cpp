@@ -28,7 +28,7 @@
 #include <tests/autotestshell.h>
 
 #include <language/duchain/repositories/itemrepository.h>
-#include <language/duchain/indexedstring.h>
+#include <language/duchain/repositories/runninghash.h>
 
 #include <algorithm>
 
@@ -46,7 +46,7 @@ struct TestData
   uint hash() const
   {
     const char* str = ((const char*)this) + sizeof(TestData);
-    return IndexedString::hashString(str, length);
+    return RunningHash::hashString(str, length);
   }
 };
 
@@ -56,7 +56,7 @@ struct TestDataRepositoryItemRequest
   TestDataRepositoryItemRequest(const char* text, uint length)
   : m_length(length)
   , m_text(text)
-  , m_hash(IndexedString::hashString(text, length))
+  , m_hash(RunningHash::hashString(text, length))
   {
   }
 
