@@ -34,9 +34,7 @@ private slots:
     void index();
     void length();
     void qstring();
-    void qbytearray();
     void kurl();
-    void indexForString();
     void hashString();
     void hashIndexed();
     void qSet();
