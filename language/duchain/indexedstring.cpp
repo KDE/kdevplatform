@@ -185,7 +185,7 @@ IndexedString::IndexedString(const QString& string)
 }
 
 IndexedString::IndexedString(const KUrl& url)
-: m_index(indexString(url.pathOrUrl(), this))
+: m_index(indexString(url.pathOrUrl(KUrl::RemoveTrailingSlash), this))
 {
 }
 
