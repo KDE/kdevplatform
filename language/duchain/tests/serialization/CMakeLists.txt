@@ -25,15 +25,3 @@ target_link_libraries(benchindexedstring
   ${KDEVPLATFORM_TESTS_LIBRARIES}
   ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
 )
-
-########### next target ###############
-
-set(benchindexedstring_ng_SRCS benchindexedstring-ng.cpp indexedstring-ng.cpp)
-
-kde4_add_unit_test(benchindexedstring_ng ${benchindexedstring_ng_SRCS})
-target_link_libraries(benchindexedstring_ng
-  ${KDE4_KDECORE_LIBS}
-  ${QT_QTTEST_LIBRARY}
-  ${KDEVPLATFORM_TESTS_LIBRARIES}
-  ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
-)
