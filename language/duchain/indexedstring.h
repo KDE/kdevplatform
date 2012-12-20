@@ -68,7 +68,10 @@ public:
   /**
    * Create an empty IndexedString.
    */
-  IndexedString();
+  inline IndexedString()
+  : m_index(0)
+  {
+  }
 
   /**
    * Index the given char @p c.

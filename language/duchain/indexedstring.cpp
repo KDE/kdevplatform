@@ -155,12 +155,6 @@ inline uint isNonTrivial(uint index)
 
 }
 
-IndexedString::IndexedString()
-: m_index(0)
-{
-}
-
-
 IndexedString::IndexedString(QChar c)
 : m_index(charToIndex(c))
 {
