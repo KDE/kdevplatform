@@ -49,7 +49,11 @@ struct StringData {
 struct StringRepositoryItemRequest {
 
   //The text is supposed to be utf8 encoded
-  StringRepositoryItemRequest(const char* text, unsigned int hash, unsigned short length) : m_hash(hash), m_length(length), m_text(text) {
+  StringRepositoryItemRequest(const char* text, unsigned short length)
+  : m_hash(RunningHash::hashString(text, length))
+  , m_length(length)
+  , m_text(text)
+  {
   }
   
   enum {

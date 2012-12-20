@@ -50,6 +50,19 @@ struct RunningHash
   }
 
   unsigned int hash;
+
+  inline static unsigned int hashString(const char* string, unsigned short length)
+  {
+    if (!length) {
+      return 0;
+    }
+
+    RunningHash hasher;
+    for(unsigned short i = 0; i < length; ++i) {
+      hasher.append(string[i]);
+    }
+    return hasher.hash;
+  }
 };
 
 }
