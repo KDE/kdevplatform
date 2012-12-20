@@ -129,37 +129,6 @@ inline uint charToIndex(QChar c)
   return 0xffff0000 | c.unicode();
 }
 
-/**
- * Read the unicode value of @p index emplaced in the upper four bytes.
- */
-inline QChar indexToChar(uint index)
-{
-  return QChar((ushort)index & 0xff);
-}
-
-/**
- * Check whether the index is a char
- */
-inline bool isChar(uint index)
-{
-  return (index & 0xffff0000) == 0xffff0000;
-}
-
-/**
- * Check whether the index is non-trivial
- */
-inline uint isNonTrivial(uint index)
-{
-  return index && !isChar(index);
-}
-
-}
-
-IndexedString::IndexedString(QChar c)
-: m_index(charToIndex(c))
-{
-}
-
 uint indexString(const QString& string, IndexedString* item)
 {
   if (string.isEmpty()) {
@@ -179,6 +148,13 @@ uint indexString(const QString& string, IndexedString* item)
   }
 }
 
+}
+
+IndexedString::IndexedString(QChar c)
+: m_index(charToIndex(c))
+{
+}
+
 IndexedString::IndexedString(const QString& string)
 : m_index(indexString(string, this))
 {
@@ -191,7 +167,7 @@ IndexedString::IndexedString(const KUrl& url)
 
 IndexedString::~IndexedString()
 {
-  if (isNonTrivial(m_index)) {
+  if (isNonTrivial()) {
     if (shouldDoDUChainReferenceCounting(this)) {
       QMutexLocker lock(getGlobalIndexedStringRepository()->mutex());
       decrease(getGlobalIndexedStringRepository()->dynamicItemFromIndexSimple(m_index)->refCount);
@@ -202,7 +178,7 @@ IndexedString::~IndexedString()
 IndexedString::IndexedString(const IndexedString& rhs)
 : m_index(rhs.m_index)
 {
-  if (isNonTrivial(m_index)) {
+  if (isNonTrivial()) {
     if (shouldDoDUChainReferenceCounting(this)) {
       QMutexLocker lock(getGlobalIndexedStringRepository()->mutex());
       increase(getGlobalIndexedStringRepository()->dynamicItemFromIndexSimple(m_index)->refCount);
@@ -217,7 +193,7 @@ IndexedString& IndexedString::operator=(const IndexedString& rhs)
   }
 
   // decrease refcount of current/old index
-  if (isNonTrivial(m_index)) {
+  if (isNonTrivial()) {
     if (shouldDoDUChainReferenceCounting(this)) {
       QMutexLocker lock(getGlobalIndexedStringRepository()->mutex());
       decrease(getGlobalIndexedStringRepository()->dynamicItemFromIndexSimple(m_index)->refCount);
@@ -227,7 +203,7 @@ IndexedString& IndexedString::operator=(const IndexedString& rhs)
   m_index = rhs.m_index;
 
   // increase refcount for new index
-  if (isNonTrivial(m_index)) {
+  if (isNonTrivial()) {
     if(shouldDoDUChainReferenceCounting(this)) {
       QMutexLocker lock(getGlobalIndexedStringRepository()->mutex());
       increase(getGlobalIndexedStringRepository()->dynamicItemFromIndexSimple(m_index)->refCount);
@@ -239,10 +215,10 @@ IndexedString& IndexedString::operator=(const IndexedString& rhs)
 
 QString IndexedString::toString() const
 {
-  if (!m_index) {
+  if (isEmpty()) {
     return QString();
-  } else if(isChar(m_index)) {
-    return QString(indexToChar(m_index));
+  } else if(isChar()) {
+    return QString(toChar());
   } else {
     QMutexLocker lock(getGlobalIndexedStringRepository()->mutex());
     return getGlobalIndexedStringRepository()->itemFromIndex(m_index)->string();
@@ -251,18 +227,13 @@ QString IndexedString::toString() const
 
 int IndexedString::length() const
 {
-  return lengthFromIndex(m_index);
-}
-
-int IndexedString::lengthFromIndex(uint index)
-{
-  if(!index) {
+  if(isEmpty()) {
     return 0;
-  } else if (isChar(index)) {
+  } else if (isChar()) {
     return 1;
   } else {
     QMutexLocker lock(getGlobalIndexedStringRepository()->mutex());
-    return getGlobalIndexedStringRepository()->itemFromIndex(index)->length;
+    return getGlobalIndexedStringRepository()->itemFromIndex(m_index)->length;
   }
 }
 

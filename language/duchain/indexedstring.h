@@ -156,16 +156,31 @@ public:
   }
 
   /**
+  * Check whether the index is a char
+  */
+  inline bool isChar() const
+  {
+    return (m_index & 0xffff0000) == 0xffff0000;
+  }
+
+  /**
+   * Check whether the index is non-trivial, i.e. a non-empty string.
+   */
+  inline bool isNonTrivial() const
+  {
+    return !isEmpty() && !isChar();
+  }
+
+  /**
    * @note This is relatively expensive: needs a mutex lock, hash lookups, and eventual loading,
    * so avoid it when possible.
    */
   int length() const;
 
-  /**
-   * @warning This is relatively expensive: needs a mutex lock, hash lookups, and eventual loading,
-   *       so avoid it when possible.
-   */
-  static int lengthFromIndex(uint index);
+  static int lengthFromIndex(uint index)
+  {
+    return fromIndex(index).length();
+  }
 
   /**
    * Lookup and return the string for this index.
@@ -187,6 +202,18 @@ public:
   KUrl toUrl() const
   {
     return KUrl(toString());
+  }
+
+  /**
+   * Read the unicode value of @p index emplaced in the upper four bytes.
+   *
+   * WARNING: Only call this when isChar returns true!
+   *
+   * @see isChar()
+   */
+  inline QChar toChar() const
+  {
+    return QChar((ushort)m_index & 0xff);
   }
 
   /**
