@@ -23,7 +23,9 @@
 
 #include "itemrepository.h"
 
-#include "../indexedstring.h"
+#include "runninghash.h"
+
+///FIXME: share code with IndexedString, use the faster methods introduced there, esp. for hashing!
 
 namespace Repositories {
 using namespace KDevelop;
@@ -34,14 +36,13 @@ struct StringData {
     return sizeof(StringData) + length;
   }
   unsigned int hash() const {
-    IndexedString::RunningHash running;
+    RunningHash running;
     const char* str = ((const char*)this) + sizeof(StringData);
     for(int a = length-1; a >= 0; --a) {
       running.append(*str);
       ++str;
     }
     return running.hash;
-    
   }
 };
 

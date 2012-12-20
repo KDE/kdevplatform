@@ -291,6 +291,7 @@ install(FILES
 install(FILES
     duchain/repositories/itemrepository.h
     duchain/repositories/typerepository.h
+    duchain/repositories/runninghash.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kdevplatform/language/duchain/repositories COMPONENT Devel
 )
 
