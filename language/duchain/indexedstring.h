@@ -139,9 +139,20 @@ public:
     return m_index;
   }
 
-  bool isEmpty() const
+  /**
+   * @return true when this string is is empty, false otherwise.
+   */
+  inline bool isEmpty() const
   {
     return m_index == 0;
+  }
+
+  /**
+   * Check whether this IndexedString is valid, i.e. not empty.
+   */
+  inline bool isValid() const
+  {
+    return !isEmpty();
   }
 
   /**
