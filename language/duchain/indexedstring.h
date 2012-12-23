@@ -76,7 +76,10 @@ public:
   /**
    * Index the given char @p c.
    */
-  explicit IndexedString(QChar c);
+  explicit IndexedString(const QChar c)
+  : m_index(charToIndex(c))
+  {
+  }
 
   /**
    * Index the given @p string.
@@ -239,6 +242,14 @@ public:
   {
     return m_index < rhs.m_index;
   }
+  
+  /**
+   * Emplace the unicode value of @p c in the upper four bytes of the index
+   */
+  static inline uint charToIndex(const QChar c)
+  {
+    return 0xffff0000 | c.unicode();
+  }
 
 private:
   explicit IndexedString(bool);
@@ -253,6 +264,38 @@ inline uint qHash( const KDevelop::IndexedString& str )
   return str.hash();
 }
 
+}
+
+/**
+ * Fast equality comparison of IndexedString and QChar.
+ */
+inline bool operator==(const KDevelop::IndexedString& string, const QChar c)
+{
+  return string.index() == KDevelop::IndexedString::charToIndex(c);
+}
+
+/**
+ * Fast equality comparison of IndexedString and QChar.
+ */
+inline bool operator==(const QChar c, const KDevelop::IndexedString& string)
+{
+  return string == c;
+}
+
+/**
+ * Fast inequality comparison of IndexedString and QChar.
+ */
+inline bool operator!=(const KDevelop::IndexedString& string, const QChar c)
+{
+  return !(string == c);
+}
+
+/**
+ * Fast inequality comparison of IndexedString and QChar.
+ */
+inline bool operator!=(const QChar c, const KDevelop::IndexedString& string)
+{
+  return !(string == c);
 }
 
 /**

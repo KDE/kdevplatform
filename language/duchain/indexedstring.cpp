@@ -121,20 +121,12 @@ RepositoryManager<IndexedStringRepository>& getGlobalIndexedStringRepository()
   return globalIndexedStringRepository;
 }
 
-/**
- * Emplace the unicode value of @p c in the upper four bytes of the index
- */
-inline uint charToIndex(QChar c)
-{
-  return 0xffff0000 | c.unicode();
-}
-
 uint indexString(const QString& string, IndexedString* item)
 {
   if (string.isEmpty()) {
     return 0;
   } else if (string.length() == 1) {
-    return charToIndex(string.at(0));
+    return IndexedString::charToIndex(string.at(0));
   } else {
     QMutexLocker lock(getGlobalIndexedStringRepository()->mutex());
     uint index = getGlobalIndexedStringRepository()->index(IndexedStringRepositoryItemRequest(string));
@@ -148,11 +140,6 @@ uint indexString(const QString& string, IndexedString* item)
   }
 }
 
-}
-
-IndexedString::IndexedString(QChar c)
-: m_index(charToIndex(c))
-{
 }
 
 IndexedString::IndexedString(const QString& string)
