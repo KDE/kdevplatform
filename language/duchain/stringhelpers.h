@@ -76,24 +76,18 @@ QString KDEVPLATFORMLANGUAGE_EXPORT clearStrings( QString str, QChar replacement
 QString KDEVPLATFORMLANGUAGE_EXPORT formatComment( const QString& comment );
 
 /**
- * Extracts the interesting information out of a comment.
- * For example it removes all the stars at the beginning, and re-indents the text.
- * */
-QByteArray KDEVPLATFORMLANGUAGE_EXPORT formatComment( const QByteArray& comment );
-
-/**
  * Remove characters in @ref str from the end of @ref from
  *
  * @return number of stripped characters
  * */
-int KDEVPLATFORMLANGUAGE_EXPORT rStrip( const QByteArray& str, QByteArray& from );
+int KDEVPLATFORMLANGUAGE_EXPORT rStrip( const QString& str, QString& from );
 
 /**
  * Remove characters in @ref str from the beginning of @ref from
  *
  * @return number of stripped characters
  * */
-int KDEVPLATFORMLANGUAGE_EXPORT strip( const QByteArray& str, QByteArray& from );
+int KDEVPLATFORMLANGUAGE_EXPORT strip( const QString& str, QString& from );
 
 /**
  * Can be used to iterate through different kinds of parameters, for example template-parameters(By giving it "<>:")

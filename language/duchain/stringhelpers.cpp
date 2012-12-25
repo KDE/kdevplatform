@@ -391,98 +391,47 @@ static inline bool isWhite( QChar c ) {
   return c.isSpace();
 }
 
-static inline bool isWhite( char c ) {
-  return QChar(c).isSpace();
-}
-
-void rStrip( const QString& str, QString& from ) {
-  if( str.isEmpty() ) return;
-
-  int i = 0;
-  int ip = from.length();
-  int s = from.length();
-
-  for( int a = s-1; a >= 0; a-- ) {
-      if( isWhite( from[a] ) ) {
-          continue;
-      } else {
-          if( from[a] == str[i] ) {
-              i++;
-              ip = a;
-              if( i == (int)str.length() ) break;
-          } else {
-              break;
-          }
-      }
-  }
-
-  if( ip != (int)from.length() ) from = from.left( ip );
-}
-
-void strip( const QString& str, QString& from ) {
-  if( str.isEmpty() ) return;
-
-  int i = 0;
-  int ip = 0;
-  int s = from.length();
-
-  for( int a = 0; a < s; a++ ) {
-      if( isWhite( from[a] ) ) {
-          continue;
-      } else {
-          if( from[a] == str[i] ) {
-              i++;
-              ip = a+1;
-              if( i == (int)str.length() ) break;
-          } else {
-              break;
-          }
-      }
-  }
-
-  if( ip ) from = from.mid( ip );
-}
-
-int rStrip( const QByteArray& str, QByteArray& from ) {
+int rStrip( const QString& str, QString& from )
+{
   if( str.isEmpty() ) return 0;
 
   int i = 0;
   int ip = from.length();
-  int s = from.length();
+  const int s = from.length();
 
   for( int a = s-1; a >= 0; a-- ) {
-      if( isWhite( from[a] ) ) { ///@todo Check whether this can cause problems in utf-8, as only one real character is treated!
+      if( from.at(a).isSpace() ) {
           continue;
       } else {
-          if( from[a] == str[i] ) {
+          if( from.at(a) == str.at(i) ) {
               i++;
               ip = a;
-              if( i == (int)str.length() ) break;
+              if( i == str.length() ) break;
           } else {
               break;
           }
       }
   }
 
-  if( ip != (int)from.length() ) from = from.left( ip );
+  if( ip != from.length() ) from = from.left( ip );
   return s - from.length();
 }
 
-int strip( const QByteArray& str, QByteArray& from ) {
+int strip( const QString& str, QString& from ) {
   if( str.isEmpty() ) return 0;
 
   int i = 0;
   int ip = 0;
-  int s = from.length();
+  const int s = from.length();
 
   for( int a = 0; a < s; a++ ) {
-      if( isWhite( from[a] ) ) { ///@todo Check whether this can cause problems in utf-8, as only one real character is treated!
+      if( from.at(a).isSpace() ) {
           continue;
       } else {
-          if( from[a] == str[i] ) {
+          if( from.at(a) == str.at(i) ) {
               i++;
               ip = a+1;
-              if( i == (int)str.length() ) break;
+              if( i == str.length() ) break;
           } else {
               break;
           }
@@ -492,6 +441,7 @@ int strip( const QByteArray& str, QByteArray& from ) {
   if( ip ) from = from.mid( ip );
   return s - from.length();
 }
+
 QString formatComment( const QString& comment ) {
   QString ret;
 
@@ -511,34 +461,6 @@ QString formatComment( const QString& comment ) {
     }
 
     ret = lines.join( "\n" );
-  }
-
-  return ret.trimmed();
-}
-
-QByteArray formatComment( const QByteArray& comment ) {
-  QByteArray ret;
-
-  QList<QByteArray> lines = comment.split( '\n' );
-
-  if ( !lines.isEmpty() ) {
-
-    QList<QByteArray>::iterator it = lines.begin();
-    QList<QByteArray>::iterator eit = lines.end();
-
-    // remove common leading chars from the beginning of lines
-    for( ; it != eit; ++it ) {
-        strip( "///", *it );
-        strip( "//", *it );
-        strip( "**", *it );
-        rStrip( "/**", *it );
-    }
-
-    foreach(const QByteArray& line, lines) {
-      if(!ret.isEmpty())
-        ret += '\n';
-      ret += line;
-    }
   }
 
   return ret.trimmed();
