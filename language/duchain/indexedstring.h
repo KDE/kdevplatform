@@ -172,7 +172,7 @@ public:
   */
   inline bool isChar() const
   {
-    return (m_index & 0xffff0000) == 0xffff0000;
+    return indexIsChar(m_index);
   }
 
   /**
@@ -225,7 +225,7 @@ public:
    */
   inline QChar toChar() const
   {
-    return QChar((ushort)m_index & 0xff);
+    return indexToChar(m_index);
   }
 
   /**
@@ -251,13 +251,31 @@ public:
   {
     return m_index < rhs.m_index;
   }
-  
+
   /**
    * Emplace the unicode value of @p c in the upper four bytes of the index
    */
   static inline uint charToIndex(const QChar c)
   {
     return 0xffff0000 | c.unicode();
+  }
+
+  /**
+   * Extract the unicode char emplaced in the upper four bytes of the index.
+   *
+   * WARNING: Only call this when isChar returns true!
+   */
+  static inline QChar indexToChar(uint index)
+  {
+    return QChar((ushort)index & 0xff);
+  }
+
+  /**
+   * Check whether the given index represents a unicode character.
+   */
+  static inline bool indexIsChar(uint index)
+  {
+    return (index & 0xffff0000) == 0xffff0000;
   }
 
 private:
