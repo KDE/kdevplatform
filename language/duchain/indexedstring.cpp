@@ -152,6 +152,12 @@ IndexedString::IndexedString(const KUrl& url)
 {
 }
 
+IndexedString::IndexedString(const char* string)
+: m_index(indexString(QString::fromUtf8(string), this))
+{
+
+}
+
 IndexedString::~IndexedString()
 {
   if (isNonTrivial()) {

@@ -96,6 +96,15 @@ public:
   explicit IndexedString(const KUrl& url);
 
   /**
+   * Index the given C-string which is expected to be UTF-8 encoded.
+   *
+   * NOTE: Do not use this, rather use IndexedString(QLatin1String("..."))
+   *       for compile-time constant strings. For runtime strings always
+   *       always use the QString constructor.
+   */
+  KDE_DEPRECATED explicit IndexedString(const char* string);
+
+  /**
    * Copy constructor.
    */
   IndexedString(const IndexedString& other);
