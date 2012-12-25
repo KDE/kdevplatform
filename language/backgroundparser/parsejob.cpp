@@ -252,7 +252,7 @@ KDevelop::ProblemPointer ParseJob::readContents()
     if(artificialCodeRepresentationExists(document())) {
         CodeRepresentation::Ptr repr = createCodeRepresentation(document());
         d->contents.contents = repr->text().toUtf8();
-        kDebug() << "took contents for " << document().str() << " from artificial code-representation";
+        kDebug() << "took contents for " << document().toString() << " from artificial code-representation";
         return KDevelop::ProblemPointer();
     }
 
@@ -313,7 +313,7 @@ KDevelop::ProblemPointer ParseJob::readContents()
             }
             p->setFinalLocation(DocumentRange(document(), SimpleRange::invalid()));
 
-            kWarning( 9007 ) << "Could not open file" << document().str() << "(path" << localFile << ")" ;
+            kWarning( 9007 ) << "Could not open file" << document().toString() << "(path" << localFile << ")" ;
 
             return p;
         }
@@ -415,7 +415,7 @@ void ParseJob::translateDUChainToRevision(TopDUContext* context)
 
     if(sourceRevision > targetRevision)
     {
-        kDebug() << "for document" << document().str() << ": source revision is higher than target revision:" << sourceRevision << " > " << targetRevision;
+        kDebug() << "for document" << document().toString() << ": source revision is higher than target revision:" << sourceRevision << " > " << targetRevision;
         return;
     }
 
@@ -482,7 +482,7 @@ bool ParseJob::isUpdateRequired(const IndexedString& languageString)
             continue;
         }
         if (!file->needsUpdate() && file->featuresSatisfied(minimumFeatures())) {
-            kDebug() << "Already up to date" << document().str();
+            kDebug() << "Already up to date" << document().toString();
             setDuChain(file->topContext());
             lock.unlock();
             highlightDUChain();

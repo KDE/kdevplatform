@@ -753,7 +753,7 @@ void BackgroundParser::documentClosed(IDocument* document)
         IndexedString url(d->m_managedTextDocumentUrls[textDocument]);
         Q_ASSERT(d->m_managed.contains(url));
 
-        kDebug() << "removing" << url.str() << "from background parser";
+        kDebug() << "removing" << url.toString() << "from background parser";
         delete d->m_managed[url];
         d->m_managedTextDocumentUrls.remove(textDocument);
         d->m_managed.remove(url);

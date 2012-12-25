@@ -73,7 +73,7 @@ QDateTime fileModificationTimeCached( const IndexedString& fileName )
     }
   }
 
-  QFileInfo fileInfo( fileName.str() );
+  QFileInfo fileInfo( fileName.toString() );
   FileModificationCache data = {currentTime, fileInfo.lastModified()};
   fileModificationCache().insert(fileName, data);
   return data.m_modificationTime;

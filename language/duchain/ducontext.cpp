@@ -1279,7 +1279,7 @@ void DUContext::applyAliases(const SearchItem::PtrList& baseIdentifiers, SearchI
             NamespaceAliasDeclaration* alias = static_cast<NamespaceAliasDeclaration*>(importDecl);
             identifiers.append( SearchItem::Ptr( new SearchItem( alias->importIdentifier(), identifier ) ) ) ;
           }else{
-            kDebug() << "Declaration with namespace alias identifier has the wrong type" << importDecl->url().str() << importDecl->range().castToSimpleRange().textRange();
+            kDebug() << "Declaration with namespace alias identifier has the wrong type" << importDecl->url().toString() << importDecl->range().castToSimpleRange().textRange();
           }
         }
       }

@@ -262,7 +262,7 @@ QString ModificationRevisionSet::toString() const
     first = false;
     
     const FileModificationPair* data = fileModificationPairRepository().itemFromIndex(*it);
-    ret += data->file.str() + ':' + data->revision.toString();
+    ret += data->file.toString() + ':' + data->revision.toString();
     ++it;
   }
 

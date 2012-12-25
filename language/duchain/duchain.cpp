@@ -389,14 +389,14 @@ public:
 
       if(m_referenceCounts.contains(context)) {
       //This happens during shutdown, since everything is unloaded
-      kDebug() << "removed a top-context that was reference-counted:" << context->url().str() << context->ownIndex();
+      kDebug() << "removed a top-context that was reference-counted:" << context->url().toString() << context->ownIndex();
       m_referenceCounts.remove(context);
       }
     }
 
     uint index = context->ownIndex();
 
-  //   kDebug(9505) << "duchain: removing document" << context->url().str();
+  //   kDebug(9505) << "duchain: removing document" << context->url().toString();
     Q_ASSERT(hasChainForIndex(index));
     Q_ASSERT(m_chainsByUrl.contains(context->url(), context));
     
@@ -522,7 +522,7 @@ public:
         if(p) {
          ret << p;
         }else{
-          kDebug() << "Failed to load enviromment-information for" << TopDUContextDynamicData::loadUrl(topContextIndex).str();
+          kDebug() << "Failed to load enviromment-information for" << TopDUContextDynamicData::loadUrl(topContextIndex).toString();
         }
       }
     }
@@ -668,7 +668,7 @@ public:
         m_environmentListInfo.itemFromIndex(index);
       }else{
         QMutexLocker lock(&m_chainsMutex);
-        kDebug(9505) << "Did not find stored item for" << url.str() << "count:" << m_fileEnvironmentInformations.values(url);
+        kDebug(9505) << "Did not find stored item for" << url.toString() << "count:" << m_fileEnvironmentInformations.values(url);
       }
       if(!atomic) {
         locker.unlock();
@@ -979,7 +979,7 @@ public:
     foreach(uint topIndex, check) {
       IndexedTopDUContext top(topIndex);
       if(top.data()) {
-        kDebug() << "removing top-context for" << top.data()->url().str() << "because it is out of date";
+        kDebug() << "removing top-context for" << top.data()->url().toString() << "because it is out of date";
         instance->removeDocumentChain(top.data());      
       }
     }
@@ -1204,7 +1204,7 @@ void DUChain::addDocumentChain( TopDUContext * chain )
 {
   QMutexLocker l(&sdDUChainPrivate->m_chainsMutex);
 
-//   kDebug(9505) << "duchain: adding document" << chain->url().str() << " " << chain;
+//   kDebug(9505) << "duchain: adding document" << chain->url().toString() << " " << chain;
   Q_ASSERT(chain);
 
   Q_ASSERT(!sdDUChainPrivate->hasChainForIndex(chain->ownIndex()));
@@ -1323,7 +1323,7 @@ TopDUContext* DUChain::chainForDocument(const KDevelop::IndexedString& document,
       for( ; it != sdDUChainPrivate->m_chains.end() && it.key().url() == document.url(); ++it )
         ++count;
       if( count > 1 )
-        kDebug(9505) << "found " << count << " chains for " << document.url().str();
+        kDebug(9505) << "found " << count << " chains for " << document.url().toString();
 
     }*/
 
@@ -1389,7 +1389,7 @@ ParsingEnvironmentFilePointer DUChain::environmentFileForDocument( const Indexed
     return ParsingEnvironmentFilePointer();
   QList< ParsingEnvironmentFilePointer> list = sdDUChainPrivate->getEnvironmentInformation(document);
 
-//    kDebug() << document.str() << ": matching" << list.size() << (onlyProxyContexts ? "proxy-contexts" : (noProxyContexts ? "content-contexts" : "contexts"));
+//    kDebug() << document.toString() << ": matching" << list.size() << (onlyProxyContexts ? "proxy-contexts" : (noProxyContexts ? "content-contexts" : "contexts"));
 
   QList< ParsingEnvironmentFilePointer>::const_iterator it = list.constBegin();
   while(it != list.constEnd()) {
@@ -1655,7 +1655,7 @@ bool DUChain::deleted() {
 void DUChain::refCountDown(TopDUContext* top) {
   QMutexLocker l(&sdDUChainPrivate->m_referenceCountsMutex);
   if(!sdDUChainPrivate->m_referenceCounts.contains(top)) {
-    //kWarning() << "tried to decrease reference-count for" << top->url().str() << "but this top-context is not referenced";
+    //kWarning() << "tried to decrease reference-count for" << top->url().toString() << "but this top-context is not referenced";
     return;
   }
   --sdDUChainPrivate->m_referenceCounts[top];
