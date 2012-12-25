@@ -251,7 +251,7 @@ KDevelop::ProblemPointer ParseJob::readContents()
     //Try using an artificial code-representation, which overrides everything else
     if(artificialCodeRepresentationExists(document())) {
         CodeRepresentation::Ptr repr = createCodeRepresentation(document());
-        d->contents.contents = repr->text().toUtf8();
+        d->contents.contents = repr->text();
         kDebug() << "took contents for " << document().toString() << " from artificial code-representation";
         return KDevelop::ProblemPointer();
     }
@@ -268,7 +268,7 @@ KDevelop::ProblemPointer ParseJob::readContents()
             t->reset(); // Reset the tracker to the current revision
             Q_ASSERT(t->revisionAtLastReset());
 
-            d->contents.contents = t->textAtLastReset().toUtf8();
+            d->contents.contents = t->textAtLastReset();
             d->contents.modification = KDevelop::ModificationRevision( lastModified, t->revisionAtLastReset()->revision() );
 
             d->revision = t->acquireRevision(d->contents.modification.revision);
@@ -318,17 +318,14 @@ KDevelop::ProblemPointer ParseJob::readContents()
             return p;
         }
 
-        d->contents.contents = file.readAll(); ///@todo Convert from local encoding to utf-8 if they don't match
+        d->contents.contents = QString::fromUtf8(file.readAll()); ///@todo Convert from local encoding to utf-8 if they don't match
         d->contents.modification = KDevelop::ModificationRevision(lastModified);
 
         file.close();
     }
 
     // To make the parsing more robust, we add some zeroes to the end of the buffer.
-    d->contents.contents.push_back((char)0);
-    d->contents.contents.push_back((char)0);
-    d->contents.contents.push_back((char)0);
-    d->contents.contents.push_back((char)0);
+    d->contents.contents += QLatin1String("\0\0\0\0");
 
     return KDevelop::ProblemPointer();
 }

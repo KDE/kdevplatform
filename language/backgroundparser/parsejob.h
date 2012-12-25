@@ -65,7 +65,7 @@ public:
         // Modification-time of the read content
         ModificationRevision modification;
         // The contents in utf-8 format
-        QByteArray contents;
+        QString contents;
     };
 
     enum SequentialProcessingFlag {
