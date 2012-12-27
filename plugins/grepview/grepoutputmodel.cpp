@@ -61,7 +61,7 @@ int GrepOutputItem::lineNumber() const
 
 QString GrepOutputItem::filename() const 
 {
-    return m_change->m_document.str();
+    return m_change->m_document.toString();
 }
 
 DocumentChangePointer GrepOutputItem::change() const

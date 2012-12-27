@@ -224,14 +224,14 @@ void ProjectFileDataProvider::fileAddedToSet( IProject* project, const IndexedSt
     ProjectFile f;
     f.project = project->name();
     f.projectUrl = project->folder();
-    f.pathOrUrl = url.str();
+    f.pathOrUrl = url.toString();
     f.indexedUrl = url;
     m_projectFiles.insert(f.pathOrUrl, f);
 }
 
 void ProjectFileDataProvider::fileRemovedFromSet( IProject*, const IndexedString& url )
 {
-    m_projectFiles.remove(url.str());
+    m_projectFiles.remove(url.toString());
 }
 
 namespace
