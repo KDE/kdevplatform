@@ -60,7 +60,7 @@ inline void decrease(uint& val)
 
 struct IndexedStringRepositoryItemRequest
 {
-  IndexedStringRepositoryItemRequest(const QString& string)
+  IndexedStringRepositoryItemRequest(const QStringRef& string)
   : m_hash(qHash(string))
   , m_str(string)
   {
@@ -109,7 +109,7 @@ struct IndexedStringRepositoryItemRequest
     return item->length == m_str.length() && (memcmp(++item, m_str.constData(), m_str.length() * sizeof(QChar)) == 0);
   }
   uint m_hash;
-  QString m_str;
+  QStringRef m_str;
 };
 
 typedef ItemRepository<IndexedStringData, IndexedStringRepositoryItemRequest, false, false> IndexedStringRepository;
@@ -121,7 +121,7 @@ RepositoryManager<IndexedStringRepository>& getGlobalIndexedStringRepository()
   return globalIndexedStringRepository;
 }
 
-uint indexString(const QString& string, IndexedString* item)
+uint indexString(const QStringRef& string, IndexedString* item)
 {
   if (string.isEmpty()) {
     return 0;
@@ -143,19 +143,24 @@ uint indexString(const QString& string, IndexedString* item)
 }
 
 IndexedString::IndexedString(const QString& string)
+: m_index(indexString(QStringRef(&string), this))
+{
+}
+
+IndexedString::IndexedString(const QStringRef& string)
 : m_index(indexString(string, this))
 {
 }
-
 IndexedString::IndexedString(const KUrl& url)
-: m_index(indexString(url.pathOrUrl(KUrl::RemoveTrailingSlash), this))
 {
+  const QString str = url.pathOrUrl(KUrl::RemoveTrailingSlash);
+  m_index = indexString(QStringRef(&str), this);
 }
 
 IndexedString::IndexedString(const char* string)
-: m_index(indexString(QString::fromUtf8(string), this))
 {
-
+  const QString str = QString::fromUtf8(string);
+  m_index = indexString(QStringRef(&str), this);
 }
 
 IndexedString::~IndexedString()

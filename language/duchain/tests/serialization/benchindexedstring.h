@@ -32,6 +32,7 @@ private slots:
     void cleanupTestCase();
 
     void index();
+    void indexStringRef();
     void length();
     void qstring();
     void kurl();

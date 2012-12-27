@@ -65,6 +65,31 @@ void BenchIndexedString::index()
   }
 }
 
+void BenchIndexedString::indexStringRef()
+{
+  QString data;
+  data.reserve(100000 * 2);
+  for(int i = 0; i < 100000; ++i) {
+    data += QString::number(i) + QLatin1Char(' ');
+  }
+  data.squeeze();
+
+  QBENCHMARK {
+    int start = -1;
+    for(int i = 0; i < data.length(); ++i) {
+      if (start == -1) {
+        if (!data.at(i).isSpace()) {
+          start = i;
+        }
+      } else if (data.at(i).isSpace()) {
+        IndexedString idx(data.midRef(start, i - start));
+        Q_UNUSED(idx);
+        start = -1;
+      }
+    }
+  }
+}
+
 QVector<uint> setupTest()
 {
   QVector<QString> data = generateData();

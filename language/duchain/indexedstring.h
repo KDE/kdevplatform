@@ -87,6 +87,11 @@ public:
   explicit IndexedString(const QString& string);
 
   /**
+   * Index the given @p string reference
+   */
+  explicit IndexedString(const QStringRef& string);
+
+  /**
    * Index the given @p KUrl.
    *
    * NOTE: This is expensive.
