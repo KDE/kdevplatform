@@ -206,7 +206,7 @@ void DUChainReader::foundClass(const Declaration* decl)
 //                 qDebug() << "arg" << notDefCount << arg.name;
                 if(notDefCount<0)
                 {
-                    arg.def=idx->str();
+                    arg.def=idx->toString();
                     QString scopeClass=decl->internalContext()->scopeIdentifier(true).toString();
                     QString scope=decl->internalContext()->scopeIdentifier().toString();
                     qDebug () << "default value" << arg.type << arg.def

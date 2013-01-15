@@ -46,7 +46,7 @@ void ClassFunctionDeclaration::setAbstractType(AbstractType::Ptr type) {
     kWarning(9505) << "WARNING: Non-function type assigned to function declaration. Type is: "
                       << type->toString() << "whichType:" << type->whichType()
                       << "Declaration is:" << toString()
-                      << topContext()->url().str() << range().castToSimpleRange();
+                      << topContext()->url() << range();
   }
   ClassMemberDeclaration::setAbstractType(type);
 }

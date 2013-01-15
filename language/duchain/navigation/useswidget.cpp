@@ -612,7 +612,7 @@ void UsesWidget::UsesWidgetCollector::progress(uint processed, uint total) {
 
 void UsesWidget::UsesWidgetCollector::processUses( KDevelop::ReferencedTopDUContext topContext ) {
   DUChainReadLocker lock(DUChain::lock());
-  kDebug() << "processing" << topContext->url().str();
+  kDebug() << "processing" << topContext->url();
   TopContextUsesWidget* widget = new TopContextUsesWidget(declaration(), declarations(), topContext.data());
   
   // move to back if it's just the declaration/definition

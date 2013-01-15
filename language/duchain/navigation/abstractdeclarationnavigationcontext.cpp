@@ -133,7 +133,7 @@ QString AbstractDeclarationNavigationContext::html(bool shorten)
             if(decls[a].isValid() && !decls[a].data()->isForwardDeclaration()) {
               modifyHtml() += "<br />";
               makeLink(i18n("possible resolution from"), KDevelop::DeclarationPointer(decls[a].data()), NavigationAction::NavigateDeclaration);
-              modifyHtml() += ' ' + decls[a].data()->url().str();
+              modifyHtml() += ' ' + decls[a].data()->url().toString();
               had = true;
             }
           }
@@ -235,20 +235,20 @@ QString AbstractDeclarationNavigationContext::html(bool shorten)
     else
       modifyHtml() += labelHighlight(i18n( "Decl.: " ));
 
-    makeLink( QString("%1 :%2").arg( KUrl(m_declaration->url().str()).fileName() ).arg( m_declaration->rangeInCurrentRevision().textRange().start().line()+1 ), m_declaration, NavigationAction::JumpToSource );
+    makeLink( QString("%1 :%2").arg( m_declaration->url().toUrl().fileName() ).arg( m_declaration->rangeInCurrentRevision().textRange().start().line()+1 ), m_declaration, NavigationAction::JumpToSource );
     modifyHtml() += " ";
     //modifyHtml() += "<br />";
     if(!dynamic_cast<FunctionDefinition*>(m_declaration.data())) {
       if( FunctionDefinition* definition = FunctionDefinition::definition(m_declaration.data()) ) {
         modifyHtml() += labelHighlight(i18n( " Def.: " ));
-        makeLink( QString("%1 :%2").arg( KUrl(definition->url().str()).fileName() ).arg( definition->rangeInCurrentRevision().textRange().start().line()+1 ), DeclarationPointer(definition), NavigationAction::JumpToSource );
+        makeLink( QString("%1 :%2").arg( definition->url().toUrl().fileName() ).arg( definition->rangeInCurrentRevision().textRange().start().line()+1 ), DeclarationPointer(definition), NavigationAction::JumpToSource );
       }
     }
 
     if( FunctionDefinition* definition = dynamic_cast<FunctionDefinition*>(m_declaration.data()) ) {
       if(definition->declaration()) {
         modifyHtml() += labelHighlight(i18n( " Decl.: " ));
-        makeLink( QString("%1 :%2").arg( KUrl(definition->declaration()->url().str()).fileName() ).arg( definition->declaration()->rangeInCurrentRevision().textRange().start().line()+1 ), DeclarationPointer(definition->declaration()), NavigationAction::JumpToSource );
+        makeLink( QString("%1 :%2").arg( definition->declaration()->url().toUrl().fileName() ).arg( definition->declaration()->rangeInCurrentRevision().textRange().start().line()+1 ), DeclarationPointer(definition->declaration()), NavigationAction::JumpToSource );
       }
     }
     
@@ -336,7 +336,7 @@ void AbstractDeclarationNavigationContext::htmlFunction()
         modifyHtml() += ' ' + nameHighlight(Qt::escape(argument->identifier().toString()));
 
         if( currentArgNum >= firstDefaultParam )
-          modifyHtml() += " = " + Qt::escape(function->defaultParameters()[ currentArgNum - firstDefaultParam ].str());
+          modifyHtml() += " = " + Qt::escape(function->defaultParameters()[ currentArgNum - firstDefaultParam ].toString());
 
         ++currentArgNum;
       }
@@ -531,7 +531,7 @@ void AbstractDeclarationNavigationContext::htmlIdentifiedType(AbstractType::Ptr 
     //We leave out the * and & reference and pointer signs, those are added to the end
     makeLink(id.toString() , DeclarationPointer(idType->declaration(m_topContext.data())), NavigationAction::NavigateDeclaration );
   } else {
-    kDebug() << "could not resolve declaration:" << idType->declarationId().isDirect() << idType->qualifiedIdentifier().toString() << "in top-context" << m_topContext->url().str();
+    kDebug() << "could not resolve declaration:" << idType->declarationId().isDirect() << idType->qualifiedIdentifier().toString() << "in top-context" << m_topContext->url();
     modifyHtml() += typeHighlight(Qt::escape(type->toString()));
   }
 }

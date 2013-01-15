@@ -132,9 +132,9 @@ void DumpChain::dump( DUContext * context, int allowedDepth )
       }
       QMap<IndexedString, QList<RangeInRevision> > uses = dec->uses();
       for(QMap<IndexedString, QList<RangeInRevision> >::const_iterator it = uses.constBegin(); it != uses.constEnd(); ++it) {
-        qout << QString((indent+2) * 2, ' ') << "File:" << it.key().str() << endl;
+        qout << QString((indent+2) * 2, ' ') << "File:" << it.key() << endl;
         foreach (const RangeInRevision& range, *it)
-          qout << QString((indent+2) * 2+1, ' ') << "Use:" << range.castToSimpleRange().textRange() << endl;
+          qout << QString((indent+2) * 2+1, ' ') << "Use:" << range << endl;
       }
     }
   } else {

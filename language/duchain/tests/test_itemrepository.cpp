@@ -198,13 +198,13 @@ class TestItemRepository : public QObject {
     void testStringSharing()
     {
       QString qString;
-        qString.fill('.', 1000);
+      qString.fill('.', 1000);
       KDevelop::IndexedString indexedString(qString);
       const int repeat = 10000;
       QVector<QString> strings;
       strings.resize(repeat);
       for(int i = 0; i < repeat; ++i) {
-        strings[i] = indexedString.str();
+        strings[i] = indexedString.toString();
         QCOMPARE(qString, strings[i]);
       }
     }

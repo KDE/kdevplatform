@@ -44,7 +44,7 @@ DUChainChangeSet & DUChainChangeSet::operator<<(DUChainChangeSet & rhs)
         return *this;
     
     Q_ASSERT(m_topContext == rhs.m_topContext);
-    kDebug() << "Merging ChangeSets for context:" << m_topContext.data()->url().str();
+    kDebug() << "Merging ChangeSets for context:" << m_topContext->url();
     
     m_objectRefs << rhs.m_objectRefs;
     rhs.m_objectRefs.clear();

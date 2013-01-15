@@ -82,8 +82,8 @@ int ProblemModel::rowCount(const QModelIndex & parent) const
     return 0;
 }
 
-QString getDisplayUrl(const QString &url, const KUrl &base) {
-    KUrl location(url);
+QString getDisplayUrl(const IndexedString &url, const KUrl &base) {
+    const KUrl location = url.toUrl();
     QString displayedUrl;
     if ( location.protocol() == base.protocol() &&
             location.user() == base.user() &&
@@ -121,7 +121,7 @@ QVariant ProblemModel::data(const QModelIndex & index, int role) const
                     case Error:
                         return p->description();
                     case File: {
-                        return getDisplayUrl(p->finalLocation().document.str(), baseDirectory);
+                        return getDisplayUrl(p->finalLocation().document, baseDirectory);
                     }
                     case Line:
                         if (p->finalLocation().isValid())
@@ -148,7 +148,7 @@ QVariant ProblemModel::data(const QModelIndex & index, int role) const
                     case Error:
                         return i18n("In file included from:");
                     case File: {
-                        return getDisplayUrl(p->locationStack().at(index.row()).document.str(), baseDirectory);
+                        return getDisplayUrl(p->locationStack().at(index.row()).document, baseDirectory);
                     } case Line:
                         if (p->finalLocation().isValid())
                             return QString::number(p->finalLocation().start.line + 1);

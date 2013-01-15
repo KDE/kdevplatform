@@ -479,7 +479,7 @@ void CodeHighlighting::applyHighlighting(void* _highlighting)
 
   if(!tracker)
   {
-    kDebug() << "no document found for the planned highlighting of" << highlighting->m_document.str();
+    kDebug() << "no document found for the planned highlighting of" << highlighting->m_document;
     delete highlighting;
     return;
   }

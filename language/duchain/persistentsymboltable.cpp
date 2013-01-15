@@ -366,11 +366,11 @@ struct AnalisysVisitor {
         }
       }
       if(decl.data() && decl.data()->qualifiedIdentifier() != item->id.identifier()) {
-        kDebug() << decl.data()->url().str() << "declaration" << decl.data()->qualifiedIdentifier() << "is registered as" << item->id.identifier();
+        kDebug() << decl.data()->url() << "declaration" << decl.data()->qualifiedIdentifier() << "is registered as" << item->id.identifier();
       }
       
       if(!decl.data() && !decl.isDummy()) {
-        kDebug() << "Item in symbol-table is invalid:" << id.toString() << item->declarations()[a].localIndex() << IndexedTopDUContext(item->declarations()[a].topContextIndex()).url().str();
+        kDebug() << "Item in symbol-table is invalid:" << id.toString() << item->declarations()[a].localIndex() << IndexedTopDUContext(item->declarations()[a].topContextIndex()).url();
       }
     }
     return true;

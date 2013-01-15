@@ -253,7 +253,7 @@ QString cursorItemText() {
     decl = idType->declaration(context);
 
   if(!decl->qualifiedIdentifier().isEmpty())
-    return decl->qualifiedIdentifier().last().identifier().str();
+    return decl->qualifiedIdentifier().last().identifier().toString();
 
   return QString();
 }
@@ -1022,13 +1022,13 @@ void QuickOpenPlugin::quickOpenDeclaration()
   IndexedString u = decl->url();
   SimpleCursor c = decl->rangeInCurrentRevision().start;
 
-  if(u.str().isEmpty()) {
+  if(u.isEmpty()) {
     kDebug() << "Got empty url for declaration" << decl->toString();
     return;
   }
 
   lock.unlock();
-  core()->documentController()->openDocument(KUrl(u.str()), c.textCursor());
+  core()->documentController()->openDocument(u.toUrl(), c.textCursor());
 }
 
 ///Returns all languages for that url that have a language support, and prints warnings for other ones.
@@ -1116,13 +1116,13 @@ void QuickOpenPlugin::quickOpenDefinition()
     decl->activateSpecialization();
   }
 
-  if(u.str().isEmpty()) {
+  if(u.isEmpty()) {
     kDebug() << "Got empty url for declaration" << decl->toString();
     return;
   }
 
   lock.unlock();
-  core()->documentController()->openDocument(KUrl(u.str()), c.textCursor());
+  core()->documentController()->openDocument(u.toUrl(), c.textCursor());
 }
 
 

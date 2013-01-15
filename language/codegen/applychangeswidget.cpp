@@ -127,7 +127,7 @@ void ApplyChangesWidget::addDocuments(const IndexedString & original)
     int idx=d->m_files.indexOf(original);
     if(idx<0) {
         QWidget * w = new QWidget;
-        d->m_documentTabs->addTab(w, original.str());
+        d->m_documentTabs->addTab(w, original.toString());
         d->m_documentTabs->setCurrentWidget(w);
 
         

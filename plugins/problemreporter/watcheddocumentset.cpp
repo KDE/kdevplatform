@@ -152,13 +152,13 @@ void CurrentProjectSet::setCurrentDocument(const KDevelop::IndexedString& url)
 
 void CurrentProjectSet::setCurrentDocumentInternal(const KDevelop::IndexedString& url)
 {
-    IProject* projectForUrl = model()->plugin()->core()->projectController()->findProjectForUrl(url.str());
+    IProject* projectForUrl = model()->plugin()->core()->projectController()->findProjectForUrl(url.toUrl());
     if (projectForUrl && projectForUrl != m_currentProject) {
         m_documents.clear();
         m_currentProject = projectForUrl;
         QList<ProjectFileItem*> files = m_currentProject->files();
         foreach (ProjectFileItem* file, files) {
-            m_documents.insert(IndexedString(file->url()));
+            m_documents.insert(file->indexedUrl());
         }
         emit changed();
     }
@@ -174,7 +174,7 @@ AllProjectSet::AllProjectSet(ProblemModel* parent)
 {
     foreach(const IProject* project, model()->plugin()->core()->projectController()->projects()) {
         foreach (ProjectFileItem* file, project->files()) {
-            m_documents.insert(IndexedString(file->url()));
+            m_documents.insert(file->indexedUrl());
         }
         trackProjectFiles(project);
     }

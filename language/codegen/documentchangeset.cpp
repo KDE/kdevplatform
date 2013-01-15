@@ -221,9 +221,9 @@ DocumentChangeSet::ChangeResult DocumentChangeSet::applyAllChanges()
         if(p) {
             QList<ProjectFileItem*> files = p->filesForUrl(url);
             if(!files.isEmpty()) {
-                ProjectBaseItem::RenameStatus renamed = files.first()->rename(it.value().str());
+                ProjectBaseItem::RenameStatus renamed = files.first()->rename(it.value().toString());
                 if(renamed == ProjectBaseItem::RenameOk) {
-                    const KUrl newUrl(url.upUrl(), it.value().str());
+                    const KUrl newUrl(url.upUrl(), it.value().toString());
                     if (url == oldActiveDoc) {
                         oldActiveDoc = newUrl;
                     }
@@ -246,7 +246,7 @@ DocumentChangeSet::ChangeResult DocumentChangeSet::applyAllChanges()
                     }
                 } else {
                     ///FIXME: share code with project manager for the error code string representation
-                    return ChangeResult(i18n("Could not rename '%1' to '%2'", url.pathOrUrl(), it.value().str()));
+                    return ChangeResult(i18n("Could not rename '%1' to '%2'", url.pathOrUrl(), it.value().toString()));
                 }
             } else {
                 //TODO: do it outside the project management?
@@ -267,7 +267,7 @@ DocumentChangeSet::ChangeResult DocumentChangeSet::applyAllChanges()
     foreach(const IndexedString &file, files) {
         CodeRepresentation::Ptr repr = createCodeRepresentation(file);
         if(!repr) {
-            return ChangeResult(QString("Could not create a Representation for %1").arg(file.str()));
+            return ChangeResult(QString("Could not create a Representation for %1").arg(file.toString()));
         }
 
         codeRepresentations[file] = repr;
@@ -333,7 +333,7 @@ DocumentChangeSet::ChangeResult DocumentChangeSetPrivate::replaceOldText(CodeRep
             if(!dynamic->replace(change.m_range.textRange(), change.m_oldText, change.m_newText, change.m_ignoreOldText))
             {
                 QString warningString = QString("Inconsistent change in %1 at %2:%3 -> %4:%5 = %6(encountered \"%7\") -> \"%8\"")
-                    .arg(change.m_document.str())
+                    .arg(change.m_document.toString())
                     .arg(change.m_range.start.line)
                     .arg(change.m_range.start.column)
                     .arg(change.m_range.end.line)
@@ -359,7 +359,7 @@ DocumentChangeSet::ChangeResult DocumentChangeSetPrivate::replaceOldText(CodeRep
     //For files on disk
     if (!repr->setText(newText)) {
         QString warningString = QString("Could not replace text in the document: %1")
-            .arg(sortedChangesList.begin()->data()->m_document.str());
+            .arg(sortedChangesList.begin()->data()->m_document.toString());
         if(replacePolicy == DocumentChangeSet::WarnOnFailedChange) {
             kWarning() << warningString;
         }
@@ -448,7 +448,7 @@ DocumentChangeSet::ChangeResult DocumentChangeSetPrivate::generateNewText(const 
         }else{
             QString warningString = QString("Inconsistent change in %1 at %2:%3 -> %4:%5"
                                             " = \"%6\"(encountered \"%7\") -> \"%8\"")
-                                            .arg(file.str())
+                                            .arg(file.toString())
                                             .arg(change.m_range.start.line)
                                             .arg(change.m_range.start.column)
                                             .arg(change.m_range.end.line)
@@ -512,7 +512,7 @@ DocumentChangeSet::ChangeResult DocumentChangeSetPrivate::removeDuplicates(const
                        QString("Inconsistent change-request at %1; "
                                "intersecting changes: "
                                "\"%2\"->\"%3\"@%4:%5->%6:%7 & \"%8\"->\"%9\"@%10:%11->%12:%13 ")
-                        .arg(file.str(), ( *previous )->m_oldText, ( *previous )->m_newText)
+                        .arg(file.toString(), ( *previous )->m_oldText, ( *previous )->m_newText)
                         .arg(( *previous )->m_range.start.line)
                         .arg(( *previous )->m_range.start.column)
                         .arg(( *previous )->m_range.end.line)

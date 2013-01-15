@@ -186,7 +186,7 @@ QList< KSharedPtr<ParsingEnvironmentFile> > ParsingEnvironmentFile::imports() co
     if(item) {
       ret << item;
     }else{
-      kDebug() << url().str() << indexedTopContext().index() << ": invalid import" << ctx.topContextIndex();
+      kDebug() << url() << indexedTopContext().index() << ": invalid import" << ctx.topContextIndex();
     }
   }
   return ret;
@@ -211,7 +211,7 @@ QList< KSharedPtr<ParsingEnvironmentFile> > ParsingEnvironmentFile::importers() 
     if(f)
       ret << f;
     else
-      kDebug() << url().str() << indexedTopContext().index() << ": invalid importer context" << ctx.topContextIndex();
+      kDebug() << url() << indexedTopContext().index() << ": invalid importer context" << ctx.topContextIndex();
   }
   return ret;
 }

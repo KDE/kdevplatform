@@ -332,7 +332,7 @@ DocumentChangeSet TemplateRenderer::renderFileTemplate(const SourceFileTemplate&
 
         DocumentChange change(document, range, QString(), render(file->data(), outputFile.identifier));
         changes.addChange(change);
-        kDebug() << "Added change for file" << document.str();
+        kDebug() << "Added change for file" << document;
     }
 
     return changes;

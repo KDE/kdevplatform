@@ -979,16 +979,16 @@ void ContextBrowserPlugin::switchUse(bool forward)
                   if(definition)
                     decl = definition;
                 }
-                KUrl u(decl->url().str());
+                const KUrl url = decl->url().toUrl();
                 SimpleRange range = decl->rangeInCurrentRevision();
                 range.end = range.start;
                 lock.unlock();
-                core()->documentController()->openDocument(u, range.textRange());
+                core()->documentController()->openDocument(url, range.textRange());
                 return;
               }else{
                 TopDUContext* nextTop = usingFiles[nextFile].data();
                 
-                KUrl u(nextTop->url().str());
+                const KUrl url = nextTop->url().toUrl();
                 
                 QList<RangeInRevision> nextTopUses = allUses(nextTop, decl, true);
                 qSort(nextTopUses);
@@ -997,7 +997,7 @@ void ContextBrowserPlugin::switchUse(bool forward)
                   SimpleRange range =  chosen->transformFromLocalRevision(forward ? nextTopUses.front() : nextTopUses.back());
                   range.end = range.start;
                   lock.unlock();
-                  core()->documentController()->openDocument(u, range.textRange());
+                  core()->documentController()->openDocument(url, range.textRange());
                 }
                 return;
               }
@@ -1005,7 +1005,7 @@ void ContextBrowserPlugin::switchUse(bool forward)
               kDebug() << "not found own file in use list";
             }
           }else{
-              KUrl url(chosen->url().str());
+              const KUrl url = chosen->url().toUrl();
               SimpleRange range = chosen->transformFromLocalRevision(localUses[nextUse]);
               range.end = range.start;
               lock.unlock();
@@ -1095,7 +1095,7 @@ void ContextBrowserPlugin::openDocument(int historyIndex) {
     Q_ASSERT_X(historyIndex >= 0, "openDocument", "negative history index");
     Q_ASSERT_X(historyIndex < m_history.size(), "openDocument", "history index out of range");
     DocumentCursor c = m_history[historyIndex].computePosition();
-    if (c.isValid() && !c.document.str().isEmpty()) {
+    if (c.isValid() && !c.document.isEmpty()) {
         
         disconnect(ICore::self()->documentController(), SIGNAL(documentJumpPerformed(KDevelop::IDocument*,KTextEditor::Cursor,KDevelop::IDocument*,KTextEditor::Cursor)), this,      SLOT(documentJumpPerformed(KDevelop::IDocument*,KTextEditor::Cursor,KDevelop::IDocument*,KTextEditor::Cursor)));
         
@@ -1136,7 +1136,7 @@ QString ContextBrowserPlugin::actionTextFor(int historyIndex) const
 inline QDebug operator<<(QDebug debug, const ContextBrowserPlugin::HistoryEntry &he)
 {
     DocumentCursor c = he.computePosition();
-    debug << "\n\tHistoryEntry " << c.line << " " << c.document.str();
+    debug << "\n\tHistoryEntry " << c.line << " " << c.document;
     return debug;
 }
 */

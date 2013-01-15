@@ -454,7 +454,7 @@ QString Identifier::toString() const
     return "(null identifier)";
   }
 
-  QString ret = identifier().str();
+  QString ret = identifier().toString();
 
 /*  if(isUnique())
     ret += "unique";*/
@@ -562,7 +562,7 @@ QualifiedIdentifier::QualifiedIdentifier(const QString& id, bool isExpression)
 QualifiedIdentifier::QualifiedIdentifier(const Identifier& id)
   : m_index(0), dd(new DynamicQualifiedIdentifierPrivate)
 {
-  if (id.dd->m_identifier.str().isEmpty()) {
+  if (id.dd->m_identifier.isEmpty()) {
     dd->m_explicitlyGlobal = true;
   } else {
     dd->m_explicitlyGlobal = false;

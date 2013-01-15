@@ -119,7 +119,7 @@ QString DumpDotGraphPrivate::dotGraphInternal(KDevelop::DUContext* context, bool
   {
     TopDUContext* topCtx = static_cast<TopDUContext*>(context);
     if( topCtx->parsingEnvironmentFile() ) {
-      QString file( topCtx->parsingEnvironmentFile()->url().str() );
+      QString file( topCtx->parsingEnvironmentFile()->url().toString() );
 
       KUrl url = KUrl(file);
       if(topCtx->parsingEnvironmentFile() && topCtx->parsingEnvironmentFile()->isProxyContext())
@@ -160,7 +160,7 @@ QString DumpDotGraphPrivate::dotGraphInternal(KDevelop::DUContext* context, bool
       stream << dotGraphInternal(parent.context(m_topContext), false, true);
       QString label = "imports";
       if( (!dynamic_cast<TopDUContext*>(parent.context(m_topContext)) || !dynamic_cast<TopDUContext*>(context)) && !(parent.context(m_topContext)->url() == context->url()) ) {
-        label += " from " + KUrl(parent.context(m_topContext)->url().str()).fileName() + " to " + KUrl(context->url().str()).fileName();
+        label += " from " + parent.context(m_topContext)->url().toUrl().fileName() + " to " + context->url().toUrl().fileName();
       }
       
       stream << shortLabel(context) << " -> " << shortLabel(parent.context(m_topContext)) << "[style=dotted,label=\"" << label  << "\"];\n";

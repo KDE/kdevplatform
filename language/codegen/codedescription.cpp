@@ -127,7 +127,7 @@ FunctionDescription::FunctionDescription(const DeclarationPointer& declaration)
             VariableDescription var = VariableDescription(DeclarationPointer(arg));
             if (function)
             {
-                var.value = function->defaultParameterForArgument(i).str();
+                var.value = function->defaultParameterForArgument(i).toString();
                 kDebug() << var.name << var.value;
             }
             arguments << var;

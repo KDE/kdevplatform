@@ -39,10 +39,12 @@
 using namespace KDevelop;
 
 ///@todo make this language-neutral
-static Identifier destructorForName(Identifier name) {
-  QString str = name.identifier().str();
-  if(str.startsWith('~'))
-    return Identifier(str);
+static Identifier destructorForName(const Identifier& name) {
+  QString str = name.identifier().toString();
+  if (str.startsWith('~')) {
+    // already a dtor identifier
+    return name;
+  }
   return Identifier('~'+str);
 }
 
@@ -249,7 +251,7 @@ void UsesCollector::startCollecting() {
               CodeRepresentation::Ptr repr = KDevelop::createCodeRepresentation( url );
               if(repr)
               {
-                QVector<SimpleRange> found = repr->grep(decl->identifier().identifier().str());
+                QVector<SimpleRange> found = repr->grep(decl->identifier().identifier().toString());
                 grepCacheIt = grepCache.insert(url, !found.isEmpty());
               }
             }
@@ -291,7 +293,7 @@ void UsesCollector::startCollecting() {
         m_waitForUpdate = rootFiles;
 
         foreach(const IndexedString &file, rootFiles) {
-          kDebug() << "updating root file:" << file.str();
+          kDebug() << "updating root file:" << file;
           DUChain::self()->updateContextForUrl(file, TopDUContext::AllDeclarationsContextsAndUses, this);
         }
 
@@ -326,7 +328,7 @@ void UsesCollector::updateReady(KDevelop::IndexedString url, KDevelop::Reference
   DUChainReadLocker lock(DUChain::lock());
 
   if(!topContext) {
-    kDebug() << "failed updating" << url.str();
+    kDebug() << "failed updating" << url;
   }else{
     if(topContext->parsingEnvironmentFile() && topContext->parsingEnvironmentFile()->isProxyContext()) {
       ///Use the attached content-context instead
@@ -340,7 +342,7 @@ void UsesCollector::updateReady(KDevelop::IndexedString url, KDevelop::Reference
         }
       }
       if(topContext->parsingEnvironmentFile() && topContext->parsingEnvironmentFile()->isProxyContext()) {
-        kDebug() << "got bad proxy-context for" << url.str();
+        kDebug() << "got bad proxy-context for" << url;
         topContext = 0;
       }
 
@@ -369,13 +371,13 @@ void UsesCollector::updateReady(KDevelop::IndexedString url, KDevelop::Reference
       ///while only one of  those was updated. We have to check here whether this file is just such an import,
       ///or whether we work on with it.
       ///@todo We will lose files that were edited right after their update here.
-      kWarning() << "WARNING: context" << topContext->url().str() << "does not have the required features!!";
+      kWarning() << "WARNING: context" << topContext->url() << "does not have the required features!!";
       ICore::self()->uiController()->showErrorMessage("Updating " + ICore::self()->projectController()->prettyFileName(topContext->url().toUrl(), KDevelop::IProjectController::FormatPlain) + " failed!", 5);
       return;
   }
   
   if(topContext->parsingEnvironmentFile()->needsUpdate()) {
-      kWarning() << "WARNING: context" << topContext->url().str() << "is not up to date!";
+      kWarning() << "WARNING: context" << topContext->url() << "is not up to date!";
       ICore::self()->uiController()->showErrorMessage(i18n("%1 still needs an update!", ICore::self()->projectController()->prettyFileName(topContext->url().toUrl(), KDevelop::IProjectController::FormatPlain)), 5);
 //       return;
   }
@@ -386,7 +388,7 @@ void UsesCollector::updateReady(KDevelop::IndexedString url, KDevelop::Reference
       return;
 
     if(!topContext.data()) {
-      kDebug() << "updated top-context is zero:" << url.str();
+      kDebug() << "updated top-context is zero:" << url;
       return;
     }
 

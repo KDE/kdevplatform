@@ -329,7 +329,7 @@ KSharedPtr<ArtificialStringData> representationForUrl(const IndexedString& url)
         return artificialStrings[url];
     else
     {
-        IndexedString constructedUrl(CodeRepresentation::artificialUrl(url.str()));
+        IndexedString constructedUrl(CodeRepresentation::artificialUrl(url.toString()));
         if(artificialStrings.contains(constructedUrl))
             return artificialStrings[constructedUrl];
         else
@@ -373,13 +373,13 @@ InsertArtificialCodeRepresentation::InsertArtificialCodeRepresentation(const Ind
 {
     if(m_file.toUrl().isRelative())
     {
-        m_file = IndexedString(CodeRepresentation::artificialUrl(file.str()));
+        m_file = IndexedString(CodeRepresentation::artificialUrl(file.toString()));
         
         int idx = 0;
         while(artificialStrings.contains(m_file))
         {
             ++idx;
-            m_file = IndexedString(CodeRepresentation::artificialUrl(QString("%1_%2").arg(idx).arg(file.str())));
+            m_file = IndexedString(CodeRepresentation::artificialUrl(QString("%1_%2").arg(idx).arg(file.toString())));
         }
     }
     

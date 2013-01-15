@@ -81,7 +81,7 @@ void Problem::setLocationStack(const QStack< DocumentCursor > & locationStack)
 
 QString Problem::description() const
 {
-    return d_func()->description.str();
+    return d_func()->description.toString();
 }
 
 void Problem::setDescription(const QString & description)
@@ -91,7 +91,7 @@ void Problem::setDescription(const QString & description)
 
 QString Problem::explanation() const
 {
-    return d_func()->explanation.str();
+    return d_func()->explanation.toString();
 }
 
 void Problem::setExplanation(const QString & explanation)
@@ -153,7 +153,7 @@ QString Problem::toString() const
     return QString("%1:%2 in %3:[(%4,%5),(%6,%7)] %8")
         .arg(description())
         .arg(sourceString())
-        .arg(url().str())
+        .arg(url().toString())
         .arg(range().start.line)
         .arg(range().start.column)
         .arg(range().end.line)

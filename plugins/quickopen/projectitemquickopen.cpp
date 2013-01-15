@@ -52,7 +52,7 @@ struct SubstringCache
             return *it;
         }
 
-        const QString idStr = id.identifier().str();
+        const QString idStr = id.identifier().toString();
 
         int result = idStr.lastIndexOf(substring, -1, Qt::CaseInsensitive);
 

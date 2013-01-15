@@ -146,7 +146,7 @@ QString DUChainItemData::htmlDescription() const
                   function->partToString(FunctionType::SignatureReturn));
   }
 
-  text += ' ' + i18nc("%1: file path", "File: %1", decl->url().str());
+  text += ' ' + i18nc("%1: file path", "File: %1", decl->url().toString());
 
   QString ret = "<small><small>" + text + "</small></small>";
 
@@ -169,7 +169,7 @@ bool DUChainItemData::execute( QString& /*filterText*/ )
     decl = FunctionDefinition::definition(decl);
   }
 
-  KUrl url = KUrl(decl->url().str());
+  const KUrl url = decl->url().toUrl();
   KTextEditor::Cursor cursor = decl->rangeInCurrentRevision().textRange().start();
 
   DUContext* internal = decl->internalContext();
