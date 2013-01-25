@@ -63,7 +63,7 @@ namespace KDevelop
         return "(null declaration)";
     return QString("(Declaration on line %1 in %2)")
         .arg(decl->range().start.line + 1)
-        .arg(decl->topContext()->url().str());
+        .arg(decl->topContext()->url().toString());
   }
 
 namespace DeclarationTests
@@ -191,7 +191,7 @@ DeclarationTest(defaultParameter)
   if (!funcDecl)
     return OWNER_NOT_FUNC;
   int argIndex = context->localDeclarations().indexOf(decl);
-  return compareValues(funcDecl->defaultParameterForArgument(argIndex).str(), value, "Declaration's default parameter");
+  return compareValues(funcDecl->defaultParameterForArgument(argIndex).toString(), value, "Declaration's default parameter");
 }
 
 }
