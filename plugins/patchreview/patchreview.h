@@ -102,6 +102,8 @@ private Q_SLOTS :
     void closeReview();
 
 private:
+    KDevelop::IDocument* openPatchFile(const QString& title, const KUrl& path);
+
     // Switches to the review area,
     // makes sure that the working set active in the current area starts with "review" and
     // is not active in any other area. Creates new working sets if required.

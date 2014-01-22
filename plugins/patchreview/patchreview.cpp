@@ -224,9 +224,9 @@ void PatchReviewPlugin::updateKompareModel() {
         m_modelList.reset( 0 );
         delete m_diffSettings;
 
+        foreach(IDocument* patchDoc, ICore::self()->documentController()->openDocuments())
         {
-            IDocument* patchDoc = ICore::self()->documentController()->documentForUrl( m_patch->file() );
-            if( patchDoc )
+            if (patchDoc->isTextDocument() && !patchDoc->textDocument()->isReadWrite())
                 patchDoc->reload();
         }
         QString patchFile;
@@ -395,6 +395,21 @@ bool PatchReviewPlugin::setUniqueEmptyWorkingSet() {
     return true;
 }
 
+IDocument* PatchReviewPlugin::openPatchFile(const QString& title, const KUrl& path)
+{
+    IDocument* ret = ICore::self()->documentController()->openDocument( m_patch->file() );
+    //Open the diff itself
+    if ( !ret || !ret->textDocument() ) {
+      // might happen if e.g. openDocument dialog was cancelled by user
+      // or under the theoretic possibility of a non-text document getting opened
+      return 0;
+    }
+    ret->textDocument()->setReadWrite( false );
+    ret->setPrettyName( title );
+    connect(ret->textDocument(), SIGNAL(modifiedChanged(KTextEditor::Document*)), SLOT(reloadDocument(KTextEditor::Document*)));
+    return ret;
+}
+
 void PatchReviewPlugin::updateReview() {
     if( !m_patch )
         return;
@@ -413,20 +428,8 @@ void PatchReviewPlugin::updateReview() {
         documents[doc->url()] = doc;
     }
 
-    IDocument* futureActiveDoc = 0;
-    //Open the diff itself
-    if ( !documents.contains( m_patch->file() ) ) {
-        futureActiveDoc = ICore::self()->documentController()->openDocument( m_patch->file() );
-    } else {
-        futureActiveDoc = documents.take( m_patch->file() );
-    }
-    if ( !futureActiveDoc || !futureActiveDoc->textDocument() ) {
-        // might happen if e.g. openDocument dialog was cancelled by user
-        // or under the theoretic possibility of a non-text document getting opened
-        return;
-    }
-    futureActiveDoc->textDocument()->setReadWrite( false );
-    futureActiveDoc->setPrettyName( i18n( "Overview" ) );
+    documents.remove( m_patch->file() );
+    IDocument* futureActiveDoc = openPatchFile(i18n("Overview"), m_patch->file());
     
     IDocument* buddyDoc = futureActiveDoc;
     
