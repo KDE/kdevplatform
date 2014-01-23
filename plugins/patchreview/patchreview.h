@@ -77,6 +77,7 @@ public :
 
     KUrl urlForFileModel( const Diff2::DiffModel* model );
     QAction* finishReviewAction() const { return m_finishReview; }
+    KDevelop::IDocument* openPatchFile(KDevelop::IPatchSource::Ptr patch);
 
 Q_SIGNALS:
     void startingNewReview();
@@ -102,7 +103,6 @@ private Q_SLOTS :
     void closeReview();
 
 private:
-    KDevelop::IDocument* openPatchFile(const QString& title, const KUrl& path);
 
     // Switches to the review area,
     // makes sure that the working set active in the current area starts with "review" and
@@ -137,4 +137,4 @@ private:
 
 #endif
 
-// kate: space-indent on; indent-width 2; tab-width 2; replace-tabs on
+// kate: space-indent on; indent-width 4; tab-width 4; replace-tabs on

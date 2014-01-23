@@ -129,6 +129,12 @@ LocalPatchSource* PatchReviewToolView::GetLocalPatchSource() {
 }
 
 void PatchReviewToolView::fillEditFromPatch() {
+    while( m_editPatch.customActions->count() ) {
+        QLayoutItem* it = m_editPatch.customActions->takeAt(0);
+        delete it->widget();
+        delete it;
+    }
+
     IPatchSource::Ptr ipatch = m_plugin->patch();
     if ( !ipatch )
         return;
@@ -165,6 +171,12 @@ void PatchReviewToolView::fillEditFromPatch() {
 
     m_editPatch.testsButton->setVisible(showTests);
     m_editPatch.testProgressBar->hide();
+
+    foreach(QAction* action, ipatch->actions()) {
+        QToolButton* button = new QToolButton;
+        button->setDefaultAction(action);
+        m_editPatch.customActions->addWidget(button);
+    }
 }
 
 void PatchReviewToolView::slotAppliedChanged( int newState ) {

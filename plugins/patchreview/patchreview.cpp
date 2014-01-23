@@ -260,8 +260,8 @@ void PatchReviewPlugin::updateKompareModel() {
 
         for( int i = 0; i < m_modelList->modelCount(); i++ ) {
             const Diff2::DiffModel* model = m_modelList->modelAt( i );
-            for( int j = 0; j < model->differences()->count(); j++ ) {
-                model->differences()->at( j )->apply( m_patch->isAlreadyApplied() );
+            foreach(Diff2::Difference* diffs, *model->differences()) {
+                diffs->apply( m_patch->isAlreadyApplied() );
             }
         }
 
@@ -395,9 +395,9 @@ bool PatchReviewPlugin::setUniqueEmptyWorkingSet() {
     return true;
 }
 
-IDocument* PatchReviewPlugin::openPatchFile(const QString& title, const KUrl& path)
+IDocument* PatchReviewPlugin::openPatchFile(IPatchSource::Ptr patch)
 {
-    IDocument* ret = ICore::self()->documentController()->openDocument( m_patch->file() );
+    IDocument* ret = ICore::self()->documentController()->openDocument( patch->file() );
     //Open the diff itself
     if ( !ret || !ret->textDocument() ) {
       // might happen if e.g. openDocument dialog was cancelled by user
@@ -405,8 +405,7 @@ IDocument* PatchReviewPlugin::openPatchFile(const QString& title, const KUrl& pa
       return 0;
     }
     ret->textDocument()->setReadWrite( false );
-    ret->setPrettyName( title );
-    connect(ret->textDocument(), SIGNAL(modifiedChanged(KTextEditor::Document*)), SLOT(reloadDocument(KTextEditor::Document*)));
+    ret->setPrettyName( patch->name() );
     return ret;
 }
 
@@ -429,7 +428,11 @@ void PatchReviewPlugin::updateReview() {
     }
 
     documents.remove( m_patch->file() );
-    IDocument* futureActiveDoc = openPatchFile(i18n("Overview"), m_patch->file());
+    IDocument* futureActiveDoc = openPatchFile(m_patch);
+    //TODO: show in a split window
+    foreach(IPatchSource* source, m_patch->relatedPatches()) {
+        openPatchFile(source);
+    }
     
     IDocument* buddyDoc = futureActiveDoc;
     
@@ -573,4 +576,4 @@ void PatchReviewPlugin::areaChanged(Sublime::Area* area)
 
 #include "patchreview.moc"
 
-// kate: space-indent on; indent-width 2; tab-width 2; replace-tabs on
+// kate: space-indent on; indent-width 4; tab-width 4; replace-tabs on
