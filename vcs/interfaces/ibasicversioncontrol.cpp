@@ -25,3 +25,9 @@ void KDevelop::IBasicVersionControl::setupCommitMessageEditor(const KUrl&, KText
 {
     edit->setCheckSpellingEnabled(true);
 }
+
+KDevelop::IPatchSource* KDevelop::IBasicVersionControl::commitPatchSource(const QUrl& url)
+{
+    Q_UNUSED(url);
+    return 0;
+}

@@ -32,6 +32,8 @@ class KTextEdit;
 namespace KDevelop
 {
 
+class IPatchSource;
+
 class VcsJob;
 class VcsLocation;
 class VcsImportMetadataWidget;
@@ -256,6 +258,8 @@ public:
      * The default implementation does nothing.
      */
     virtual void setupCommitMessageEditor(const KUrl&, KTextEdit* edit) const;
+
+    virtual IPatchSource* commitPatchSource(const QUrl& url);
 };
 
 }

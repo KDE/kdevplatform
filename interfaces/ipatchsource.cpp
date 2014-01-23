@@ -73,5 +73,15 @@ uint IPatchSource::depth() const
     return 0;
 }
 
+QList<IPatchSource*> IPatchSource::relatedPatches()
+{
+    return QList<IPatchSource*>();
+}
+
+QList<QAction*> IPatchSource::actions()
+{
+    return QList<QAction*>();
+}
+
 
 #include "ipatchsource.moc"

@@ -25,6 +25,7 @@
 #include "interfacesexport.h"
 #include <vcs/vcsstatusinfo.h>
 
+class QAction;
 namespace KDevelop {
 
 ///Any entity may delete an IPatchSource based object at will, so it must always be referenced through a QPointer (Just use IPatchSource::Ptr).
@@ -87,6 +88,10 @@ class KDEVPLATFORMINTERFACES_EXPORT IPatchSource : public QObject {
         /// Depth - number of directories to left-strip from paths in the patch - see "patch -p"
         /// Defaults to 0
         virtual uint depth() const;
+
+        virtual QList<IPatchSource*> relatedPatches();
+        virtual QList<QAction*> actions();
+
     Q_SIGNALS:
         ///Should be emitted whenever the patch has changed.
         void patchChanged();
