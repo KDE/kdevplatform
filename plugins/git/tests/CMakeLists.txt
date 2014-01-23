@@ -18,6 +18,7 @@ if (GIT_FOUND)
         ../gitjob.cpp
         ../gitmessagehighlighter.cpp
         ../gitplugincheckinrepositoryjob.cpp
+        ../gitcommitsource.cpp
     )
     kde4_add_ui_files(gitInitTest_SRCS ../stashmanagerdialog.ui)
     kde4_add_unit_test(kdevgit-test ${gitInitTest_SRCS})
@@ -29,3 +30,6 @@ if (GIT_FOUND)
         ${KDEVPLATFORM_TESTS_LIBRARIES}
     )
 endif (GIT_FOUND)
+
+kde4_add_unit_test(gitpatchtest gitpatchtest.cpp)
+target_link_libraries(gitpatchtest ${QT_QTTEST_LIBRARY} ${KDE4_KTEXTEDITOR_LIBS})
