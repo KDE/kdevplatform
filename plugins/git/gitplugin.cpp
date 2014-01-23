@@ -44,6 +44,7 @@
 #include <vcs/dvcs/dvcsjob.h>
 #include <vcs/vcsannotation.h>
 #include <vcs/widgets/standardvcslocationwidget.h>
+#include <vcs/widgets/vcsdiffpatchsources.h>
 #include <KIO/CopyJob>
 #include <KIO/NetAccess>
 #include "gitclonejob.h"
@@ -59,6 +60,7 @@
 #include "gitjob.h"
 #include "gitmessagehighlighter.h"
 #include "gitplugincheckinrepositoryjob.h"
+#include "gitcommitsource.h"
 
 K_PLUGIN_FACTORY(KDevGitFactory, registerPlugin<GitPlugin>(); )
 K_EXPORT_PLUGIN(KDevGitFactory(KAboutData("kdevgit","kdevgit",ki18n("Git"),"0.1",ki18n("A plugin to support git version control systems"), KAboutData::License_GPL)))
@@ -342,14 +344,23 @@ KDevelop::VcsJob* GitPlugin::status(const KUrl::List& localLocations, KDevelop::
     return job;
 }
 
+DVcsJob* GitPlugin::diff(const KUrl& fileOrDirectory)
+{
+    DVcsJob* job = new GitJob(dotGitDirectory(fileOrDirectory), this, KDevelop::OutputJob::Silent);
+    job->setType(VcsJob::Diff);
+    //TODO: Figure prefixes out, they either broke partial commits or patch review
+    *job << "git" << "diff" /*<< "--no-prefix"*/ << "--no-color" << "--no-ext-diff";
+
+    connect(job, SIGNAL(readyForParsing(KDevelop::DVcsJob*)), SLOT(parseGitDiffOutput(KDevelop::DVcsJob*)));
+    return job;
+}
+
 VcsJob* GitPlugin::diff(const KUrl& fileOrDirectory, const KDevelop::VcsRevision& srcRevision, const KDevelop::VcsRevision& dstRevision,
                         VcsDiff::Type /*type*/, IBasicVersionControl::RecursionMode recursion)
 {
+    DVcsJob* job = diff(fileOrDirectory);
+
     //TODO: control different types
-    
-    DVcsJob* job = new GitJob(dotGitDirectory(fileOrDirectory), this, KDevelop::OutputJob::Silent);
-    job->setType(VcsJob::Diff);
-    *job << "git" << "diff" << "--no-prefix" << "--no-color" << "--no-ext-diff";
     if(srcRevision.revisionType()==VcsRevision::Special
         && dstRevision.revisionType()==VcsRevision::Special
         && srcRevision.specialType()==VcsRevision::Base
@@ -360,10 +371,7 @@ VcsJob* GitPlugin::diff(const KUrl& fileOrDirectory, const KDevelop::VcsRevision
         if(!revstr.isEmpty())
             *job << revstr;
     }
-    
     *job << "--" << (recursion == IBasicVersionControl::Recursive ? fileOrDirectory : preventRecursion(fileOrDirectory));
-    
-    connect(job, SIGNAL(readyForParsing(KDevelop::DVcsJob*)), SLOT(parseGitDiffOutput(KDevelop::DVcsJob*)));
     return job;
 }
 
@@ -1417,4 +1425,14 @@ CheckInRepositoryJob* GitPlugin::isInRepository(KTextEditor::Document* document)
     return job;
 }
 
+DVcsJob* GitPlugin::gitJob(const KUrl& url, OutputJob::OutputJobVerbosity v)
+{
+    DVcsJob* job = new DVcsJob(urlDir(url), this, v);
+    *job << "git";
+    return job;
+}
 
+IPatchSource* GitPlugin::commitPatchSource(const QUrl &url)
+{
+    return new GitCommitSource(url, this);
+}

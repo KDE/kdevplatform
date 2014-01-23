@@ -107,6 +107,8 @@ public:
     virtual KDevelop::VcsJob* diff(const KUrl& fileOrDirectory, const KDevelop::VcsRevision& srcRevision, const KDevelop::VcsRevision& dstRevision,
                                    KDevelop::VcsDiff::Type, RecursionMode recursion);
 
+    KDevelop::DVcsJob* diff(const KUrl& fileOrDirectory);
+
     virtual KDevelop::VcsJob* log( const KUrl& localLocation, const KDevelop::VcsRevision& rev, unsigned long limit);
     virtual KDevelop::VcsJob* log(const KUrl& localLocation, const KDevelop::VcsRevision& rev, const KDevelop::VcsRevision& limit);
     KDevelop::VcsJob* annotate(const KUrl &localLocation, const KDevelop::VcsRevision &rev);
@@ -143,6 +145,11 @@ public:
     virtual void registerRepositoryForCurrentBranchChanges(const KUrl& repository);
 
     KDevelop::CheckInRepositoryJob* isInRepository(KTextEditor::Document* document);
+
+    virtual KDevelop::IPatchSource* commitPatchSource(const QUrl &url) override;
+
+    KDevelop::DVcsJob* gitJob(const KUrl& url, KDevelop::OutputJob::OutputJobVerbosity v = KDevelop::OutputJob::Silent);
+
 protected:
   
     KUrl repositoryRoot(const KUrl& path);

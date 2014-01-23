@@ -15,6 +15,7 @@ set(kdevgit_PART_SRCS
     gitplugin.cpp
     gitjob.cpp
     gitplugincheckinrepositoryjob.cpp
+    gitcommitsource.cpp
 )
 
 kde4_add_ui_files(kdevgit_PART_SRCS stashmanagerdialog.ui)
