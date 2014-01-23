@@ -128,6 +128,7 @@ VCSDiffPatchSource::VCSDiffPatchSource(VCSDiffUpdater* updater)
 
 VCSDiffPatchSource::VCSDiffPatchSource(const KDevelop::VcsDiff& diff)
     : m_updater(0)
+    , m_name(i18n("VCS Diff"))
 {
     updateFromDiff(diff);
 }
@@ -161,10 +162,10 @@ void VCSDiffPatchSource::updateFromDiff(VcsDiff vcsdiff)
         QTextStream t2(&temp2);
         t2 << vcsdiff.diff();
         kDebug() << "filename:" << temp2.fileName();
-        m_file = KUrl(temp2.fileName());
+        m_file = KUrl::fromLocalFile(temp2.fileName());
         temp2.close();
     }else{
-        QFile file(m_file.path());
+        QFile file(m_file.toLocalFile());
         file.open(QIODevice::WriteOnly);
         QTextStream t2(&file);
         t2 << vcsdiff.diff();
@@ -172,7 +173,6 @@ void VCSDiffPatchSource::updateFromDiff(VcsDiff vcsdiff)
 
     kDebug() << "using file" << m_file << vcsdiff.diff() << "base" << vcsdiff.baseDiff();
 
-    m_name = "VCS Diff";
     m_base = vcsdiff.baseDiff();
     m_base.addPath("/");
     
@@ -281,9 +281,6 @@ VcsDiff VCSStandardDiffUpdater::update() const {
     bool correctDiff = diffJob->exec();
     if (correctDiff)
         diff = diffJob->fetchResults().value<VcsDiff>();
-
-    if (!correctDiff)
-        KMessageBox::error(0, i18n("Could not create a patch for the current version."));
 
     return diff;
 }

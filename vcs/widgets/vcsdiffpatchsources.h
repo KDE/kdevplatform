@@ -42,7 +42,7 @@ class VcsDiff;
 
 class QWidget;
 
-class VCSDiffUpdater {
+class KDEVPLATFORMVCS_EXPORT VCSDiffUpdater {
 public:
     virtual ~VCSDiffUpdater();
     virtual KDevelop::VcsDiff update() const = 0;
@@ -62,9 +62,8 @@ private:
     KUrl m_url;
 };
 
-
 class KDEVPLATFORMVCS_EXPORT VCSDiffPatchSource : public KDevelop::IPatchSource {
-    public:
+public:
     /// The ownership of the updater is taken
     VCSDiffPatchSource(VCSDiffUpdater* updater);
     VCSDiffPatchSource(const KDevelop::VcsDiff& diff);
@@ -87,7 +86,7 @@ class KDEVPLATFORMVCS_EXPORT VCSDiffPatchSource : public KDevelop::IPatchSource 
     VCSDiffUpdater* m_updater;
     QList<KDevelop::VcsStatusInfo> m_infos;
     QMap<KUrl, KDevelop::VcsStatusInfo::State> m_selectable;
-    private:
+private:
     void updateFromDiff(KDevelop::VcsDiff diff);
 };
 

@@ -1084,13 +1084,14 @@ void ProjectController::commitCurrentProject()
             ICore::self()->documentController()->saveAllDocuments(KDevelop::IDocument::Silent);
 
             const Path basePath = project->path();
-            VCSCommitDiffPatchSource* patchSource = new VCSCommitDiffPatchSource(new VCSStandardDiffUpdater(vcs, basePath.toUrl()));
+            IPatchSource* patchSource = vcs->commitPatchSource(basePath.toUrl());
+            if(!patchSource)
+                patchSource = new VCSCommitDiffPatchSource(new VCSStandardDiffUpdater(vcs, basePath.toUrl()));
 
             bool ret = showVcsDiff(patchSource);
 
             if(!ret) {
                 VcsCommitDialog *commitDialog = new VcsCommitDialog(patchSource);
-                commitDialog->setCommitCandidates(patchSource->infos());
                 commitDialog->exec();
             }
         }

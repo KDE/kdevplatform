@@ -495,13 +495,14 @@ void VcsPluginHelper::commit()
     KUrl url = d->ctxUrls.first();
     
     // We start the commit UI no matter whether there is real differences, as it can also be used to commit untracked files
-    VCSCommitDiffPatchSource* patchSource = new VCSCommitDiffPatchSource(new VCSStandardDiffUpdater(d->vcs, url));
+    IPatchSource* patchSource = d->vcs->commitPatchSource(url);
+    if(!patchSource)
+        patchSource = new VCSCommitDiffPatchSource(new VCSStandardDiffUpdater(d->vcs, url));
     
     bool ret = showVcsDiff(patchSource);
 
     if(!ret) {
         VcsCommitDialog *commitDialog = new VcsCommitDialog(patchSource);
-        commitDialog->setCommitCandidates(patchSource->infos());
         commitDialog->exec();
     }
 }
