@@ -30,9 +30,6 @@
 ///@todo Always prefer exactly that lock that is requested by the thread that has the foreground mutex,
 ///           to reduce the amount of UI blocking.
 
-//Microseconds to sleep when waiting for a lock
-const uint uSleepTime = 500;
-
 namespace KDevelop
 {
 
@@ -97,7 +94,7 @@ bool DUChainLock::lockForRead(unsigned int timeout)
 
     while (d->m_writer.loadAcquire()) {
       if (!timeout || t.elapsed() < timeout) {
-        QThread::usleep(uSleepTime);
+        QThread::yieldCurrentThread();
       } else {
         //Fail!
         d->changeOwnReaderRecursion(-1);
@@ -152,7 +149,7 @@ bool DUChainLock::lockForWrite(uint timeout)
     }
 
     if (!timeout || t.elapsed() < timeout) {
-      QThread::usleep(uSleepTime);
+      QThread::yieldCurrentThread();
     } else {
       //Fail!
       return false;
