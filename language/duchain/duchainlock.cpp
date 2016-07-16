@@ -62,6 +62,8 @@ public:
   QAtomicInt m_writerRecursion;
   ///How often is the chain read-locked recursively by all readers? Should be sum of all m_readerRecursion values
   QAtomicInt m_totalReaderRecursion;
+  ///Nonzero if there is a thread waiting for a timed read lock.
+  QAtomicInt m_timeCriticalWaiters;
 
   QThreadStorage<int> m_readerRecursion;
 };
@@ -78,11 +80,16 @@ DUChainLock::~DUChainLock()
 
 bool DUChainLock::lockForRead(unsigned int timeout)
 {
+  auto currentThread = QThread::currentThread();
+  if (timeout) {
+    d->m_timeCriticalWaiters.fetchAndAddRelaxed(1);
+  }
+
   ///Step 1: Increase the own reader-recursion. This will make sure no further write-locks will succeed
   d->changeOwnReaderRecursion(1);
 
   QThread* w = d->m_writer.loadAcquire();
-  if (w == 0 || w == QThread::currentThread()) {
+  if (w == 0 || w == currentThread) {
     //Successful lock: Either there is no writer, or we hold the write-lock by ourselves
   } else {
     ///Step 2: Start spinning until there is no writer any more
@@ -93,16 +100,28 @@ bool DUChainLock::lockForRead(unsigned int timeout)
     }
 
     while (d->m_writer.loadAcquire()) {
-      if (!timeout || t.elapsed() < timeout) {
+      if (!timeout) {
+        // no timeout, just wait by yielding
         QThread::yieldCurrentThread();
+      }
+      else if (t.elapsed() < timeout) {
+        // there is a timeout, do not yield to the scheduler but just wait
+        QThread::usleep(50);
       } else {
         //Fail!
         d->changeOwnReaderRecursion(-1);
+        if (timeout) {
+          qWarning() << "timed read lock failed:" << currentThread << "timeout" << timeout;
+          d->m_timeCriticalWaiters.fetchAndAddRelaxed(-1);
+        }
         return false;
       }
     }
   }
 
+  if (timeout) {
+    d->m_timeCriticalWaiters.fetchAndAddRelaxed(-1);
+  }
   return true;
 }
 
@@ -118,11 +137,12 @@ bool DUChainLock::currentThreadHasReadLock()
 
 bool DUChainLock::lockForWrite(uint timeout)
 {
-  //It is not allowed to acquire a write-lock while holding read-lock
+  auto currentThread = QThread::currentThread();
 
+  //It is not allowed to acquire a write-lock while holding read-lock
   Q_ASSERT(d->ownReaderRecursion() == 0);
 
-  if (d->m_writer.load() == QThread::currentThread()) {
+  if (d->m_writer.load() == currentThread) {
     //We already hold the write lock, just increase the recursion count and return
     d->m_writerRecursion.fetchAndAddRelaxed(1);
     return true;
@@ -131,6 +151,14 @@ bool DUChainLock::lockForWrite(uint timeout)
   QElapsedTimer t;
   if (timeout) {
     t.start();
+  }
+
+  while (d->m_timeCriticalWaiters > 0) {
+    //While there is somebody waiting for a timed read lock, do not acquire a write lock at all.
+    QThread::yieldCurrentThread();
+    if (timeout && t.elapsed() >= timeout) {
+      return false;
+    }
   }
 
   while (1) {
