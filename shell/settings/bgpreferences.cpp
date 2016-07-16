@@ -54,7 +54,7 @@ void BGPreferences::reset()
     KConfigGroup config(ICore::self()->activeSession()->config(), "Background Parser");
 
     preferencesDialog->kcfg_delay->setValue(config.readEntry("Delay", 500));
-    preferencesDialog->kcfg_threads->setValue(config.readEntry("Number of Threads", QThread::idealThreadCount()));
+    preferencesDialog->kcfg_threads->setValue(config.readEntry("Number of Threads", qMin(4, QThread::idealThreadCount())));
     preferencesDialog->kcfg_enable->setChecked(config.readEntry("Enabled", true));
 }
 
