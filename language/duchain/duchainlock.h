@@ -62,7 +62,8 @@ public:
    * there is a write lock.  Read locks are recursive.
    * That means that a thread can acquire a read-lock when it already
    * has an arbitrary count of read- and write-locks acquired.
-   * @param timeout A locking timeout in milliseconds. If it is reached, and the lock could not be acquired, false is returned. If null, the default timeout is used.
+   * @param timeout A locking timeout in milliseconds. If it is reached, and the lock could not be acquired, false is returned.
+   *                If zero, the lock request does not time out.
    */
   bool lockForRead(unsigned int timeout = 0);
 
@@ -83,7 +84,7 @@ public:
    * Write locks are recursive. That means that they can by acquired by threads
    * that already have an arbitrary count of write-locks acquired.
    *
-   * @param timeout A timeout in milliseconds. If zero, the default-timeout is used(Currently 10 seconds).
+   * @param timeout A timeout in milliseconds. If zero, the lock request does not time out.
    *
    * \warning Write-locks can NOT be acquired by threads that already have a read-lock.
    */
