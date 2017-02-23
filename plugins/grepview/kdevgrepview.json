@@ -2,7 +2,7 @@
     "KPlugin": {
         "Category": "Utilities", 
         "Description": "Allows fast searching of multiple files using patterns or regular expressions. And allow to replace it too.", 
-        "Description[ca@valencia]": "Permet la cerca ràpida de múltiples fitxers usant patrons o expressions regulars. I també permet substitucions.", 
+        "Description[ca@valencia]": "Permet la busca ràpida de múltiples fitxers usant patrons o expressions regulars. I també permet substitucions.", 
         "Description[ca]": "Permet la cerca ràpida de múltiples fitxers usant patrons o expressions regulars. I també permet substitucions.", 
         "Description[de]": "Ermöglicht es, Dateien mit Hilfe von Mustern und regulären Ausdrücken zu durchsuchen bzw. Ersetzungen vorzunehmen.", 
         "Description[es]": "Permite la búsqueda rápida de múltiples archivos usando patrones o expresiones regulares. También permite realizar sustituciones.", 
@@ -24,7 +24,7 @@
         "Icon": "kfind", 
         "Id": "kdevgrepview", 
         "Name": "Find/Replace In Files", 
-        "Name[ca@valencia]": "Cerca i substitució en fitxers", 
+        "Name[ca@valencia]": "Busca i substitució en fitxers", 
         "Name[ca]": "Cerca i substitució en fitxers", 
         "Name[cs]": "Hledat-nahradit v souborech", 
         "Name[de]": "In Dateien suchen/ersetzen", 
