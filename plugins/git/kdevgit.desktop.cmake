@@ -7,6 +7,7 @@ Comment[bg]=Тaзи приставка вгражда Git в KDevelop
 Comment[bs]=Ovaj dodatak integriše Git u KDevelop
 Comment[ca]=Aquest connector integra Git en KDevelop
 Comment[ca@valencia]=Este connector integra Git en KDevelop
+Comment[cs]=Tento modul integruje podporu pro Git v KDevelop
 Comment[da]=Dette plugin integrerer Git med KDevelop
 Comment[de]=Dieses Modul integriert Git in KDevelop.
 Comment[el]=Αυτό το πρόσθετο ενσωματώνει το Git στο KDevelop

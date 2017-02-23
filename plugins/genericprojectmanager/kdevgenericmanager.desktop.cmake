@@ -5,6 +5,7 @@ Name[bg]=Най-общ манипулатор на проект
 Name[bs]=Menadžer za generisanje projekta
 Name[ca]=Gestor de projectes genèric
 Name[ca@valencia]=Gestor de projectes genèric
+Name[cs]=Obecný správce projektů
 Name[da]=Håndtering af generisk projekt
 Name[de]=Allgemeine Projektverwaltung
 Name[el]=Γενικευμένος διαχειριστής έργου

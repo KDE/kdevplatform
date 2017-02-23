@@ -7,6 +7,7 @@ Comment[bg]=Тaзи приставка вгражда CVS в KDevelop
 Comment[bs]=Ovaj dodatak integriše CVS u KDevelop
 Comment[ca]=Aquest connector integra CVS en KDevelop
 Comment[ca@valencia]=Este connector integra CVS en KDevelop
+Comment[cs]=Tento modul integruje podporu pro CVS v KDevelop
 Comment[da]=Dette plugin integrerer CVS med KDevelop
 Comment[de]=Dieses Modul integriert CVS in KDevelop.
 Comment[el]=Το πρόσθετο αυτό ενσωματώνει το CVS στο KDevelop

@@ -72,6 +72,7 @@ GenericName[bg]=Външни скриптове
 GenericName[bs]=Spoljnje skripte
 GenericName[ca]=Scripts externs
 GenericName[ca@valencia]=Scripts externs
+GenericName[cs]=Externí skripty
 GenericName[da]=Eksterne scripts
 GenericName[de]=Externe Skripte
 GenericName[el]=Εξωτερικά σενάρια

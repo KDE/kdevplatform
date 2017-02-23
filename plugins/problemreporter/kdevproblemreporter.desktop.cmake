@@ -73,6 +73,7 @@ GenericName[bg]=Съобщения за грешки
 GenericName[bs]=Prikazivač problema
 GenericName[ca]=Notificador de problemes
 GenericName[ca@valencia]=Notificador de problemes
+GenericName[cs]=Hlášení problémů
 GenericName[da]=Problemrapportering
 GenericName[de]=Fehlerberichte
 GenericName[el]=Ανταποκριτής προβλημάτων

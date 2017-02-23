@@ -7,6 +7,7 @@ Comment[bg]=Тaзи приставка вгражда файловия мани�
 Comment[bs]=Dodatak donosi menadžer datoteka KDevelopu.
 Comment[ca]=Aquest connector proporciona un gestor de fitxers al KDevelop.
 Comment[ca@valencia]=Este connector proporciona un gestor de fitxers al KDevelop.
+Comment[cs]=Tento modul do KDevelop přináší správce souborů.
 Comment[da]=Dette plugin bringer filhåndtering til KDevelop.
 Comment[de]=Dieses Modul integriert einen Datei-Browser in KDevelop.
 Comment[el]=Αυτό το πρόσθετο ενσωματώνει ένα διαχειριστή αρχείων στο KDevelop

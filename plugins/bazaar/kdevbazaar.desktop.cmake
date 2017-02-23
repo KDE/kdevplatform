@@ -8,6 +8,7 @@ Comment[bg]=Тази приставка вгражда Bazaar в KDevelop
 Comment[bs]=Ovaj dodatak integriše Bazaar u KDevelopu.
 Comment[ca]=Aquest connector integra Bazaar en KDevelop
 Comment[ca@valencia]=Este connector integra Bazaar en KDevelop
+Comment[cs]=Tento modul integruje podporu pro Bazaar v KDevelop
 Comment[da]=Dette plugin integrerer Bazaar med KDevelop
 Comment[de]=Dieses Modul integriert Bazaar in KDevelop.
 Comment[el]=Αυτό το πρόσθετο ενσωματώνει το Bazaar στο KDevelop

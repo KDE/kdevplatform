@@ -7,6 +7,7 @@ Comment[bg]=Тази приставка вгражда subversion в KDevelop.
 Comment[bs]=Ovaj dodatak integriše subversion u KDevelopu.
 Comment[ca]=Aquest connector integra el «subversion» en el KDevelop.
 Comment[ca@valencia]=Este connector integra el «subversion» en el KDevelop.
+Comment[cs]=Tento modul integruje podporu pro subversion v KDevelop
 Comment[da]=Dette plugin integrerer subversion med KDevelop.
 Comment[de]=Dieses Modul integriert Subversion in KDevelop.
 Comment[el]=Αυτό το πρόσθετο ενσωματώνει το subversion στο KDevelop

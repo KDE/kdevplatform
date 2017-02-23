@@ -73,6 +73,7 @@ GenericName=Pastebin
 GenericName[bs]=Pastebin
 GenericName[ca]=Pastebin
 GenericName[ca@valencia]=Pastebin
+GenericName[cs]=Vkládací koš
 GenericName[da]=Pastebin
 GenericName[de]=Pastebin
 GenericName[el]=Pastebin
