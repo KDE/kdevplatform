@@ -63,6 +63,7 @@ bool TypeSystem::ensureFactoryLoaded(const AbstractTypeData& data) const
   if (!m_factories.contains(data.typeClassId)) {
     qCWarning(LANGUAGE) << "Factory for this type not loaded:" << data.typeClassId;
     Q_ASSERT(false);
+    return false;
   }
   return true;
 }
