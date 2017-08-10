@@ -1,2 +1,0 @@
-kdevplatform_create_template_archive(test_qtestlib)
-kdevplatform_create_template_archive(test_yaml2)

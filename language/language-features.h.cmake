@@ -1,2 +1,0 @@
-#cmakedefine01 HAVE_MALLOC_H
-#cmakedefine01 HAVE_MALLOC_TRIM

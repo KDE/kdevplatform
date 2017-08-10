@@ -1,1 +1,0 @@
-{% for ns in namespaces %}{{ ns|upper }}_{% endfor %}{{ name|upper }}{{ include_guard_suffix|default:"_H" }}

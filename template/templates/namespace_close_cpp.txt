@@ -1,3 +1,0 @@
-{% for ns in namespaces %}
-{% templatetag closebrace %}
-{% endfor %}

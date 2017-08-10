@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# public domain
+#
+# template for script for copying private branches over from kdevplatform repo to kdevelop repo
+
+# variables which need adapting:
+KDEVPLATFORM_DIR=/path/to/kdevplatform
+KDEVELOP_DIR=/path/to/kdevelop
+PATCHESBASE_DIR=/tmp/kdevplatform-transfer-patches
+
+
+if [ "$1" == "" ]; then
+    echo "Please pass a branch as argument."
+    exit 1
+fi
+
+# commit which is last of merged ones
+KDEVPLATFORM_BASECOMMIT=9362447d74c81babdd8619f52435a3cadff49521
+BRANCH=$1
+PATCHES_DIR="$PATCHESBASE_DIR/$BRANCH"
+
+if [ -e "$PATCHES_DIR" ]; then
+    echo "Directory $PATCHES_DIR already exists, please remove."
+    exit 1
+fi
+
+mkdir -p "$PATCHES_DIR" || exit 1
+
+cd "$KDEVPLATFORM_DIR"
+
+echo "Rebasing '$BRANCH' to merged commit from master in kdevplatform..."
+git rebase $KDEVPLATFORM_BASECOMMIT $BRANCH || exit 1
+
+echo "Creating patches of branch '$BRANCH' against 'master' in kdevplatform..."
+git format-patch $KDEVPLATFORM_BASECOMMIT...$BRANCH -o "$PATCHES_DIR" || exit 1
+
+cd "$KDEVELOP_DIR"
+
+echo "Creating branch '$BRANCH' in kdevelop, based on 'master'..."
+# for something close to last kdevplatform master
+git checkout -b $BRANCH 391e53faef2fba25abbd36da7d81596cb027e3fc || exit 1
+
+if [ "$?" != 0 ]; then
+    echo "Could not create branch '$BRANCH'."
+    exit 1
+fi
+
+echo "Applying patches for branch '$BRANCH' in kdevelop..."
+git am --directory=kdevplatform "$PATCHES_DIR"/* || exit 1
+
+if [ "$?" != 0 ]; then
+    exit 1
+fi
+
+echo "Rebasing '$BRANCH' to master in kdevelop..."
+git rebase master $BRANCH || exit 1
