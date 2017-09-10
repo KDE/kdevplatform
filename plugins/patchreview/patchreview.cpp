@@ -58,6 +58,7 @@
 #include <sublime/area.h>
 #include <sublime/document.h>
 #include <sublime/view.h>
+#include <vcs/widgets/vcsdiffpatchsources.h>
 #include "patchhighlighter.h"
 #include "patchreviewtoolview.h"
 #include "localpatchsource.h"
